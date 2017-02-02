@@ -72,27 +72,6 @@ GENERATE_DB () {	# Créer une base de données et un utilisateur dédié au nom 
 	ynh_app_setting_set $app mysqlpwd $db_pwd
 }
 
-SETUP_SOURCE () {	# Télécharge la source, décompresse et copie dans $final_path
-# $1 = Nom de l'archive téléchargée.
-	wget -nv -i ../sources/source_url -O $1
-	# Vérifie la somme de contrôle de la source téléchargée.
-	md5sum -c ../sources/source_md5 --status || (echo "Corrupt source" >&2 && false)
-	# Décompresse la source
-	if [ "$(echo ${1##*.})" == "gz" ]; then
-		tar -x -f $1
-	elif [ "$(echo ${1##*.})" == "zip" ]; then
-		unzip -q $1
-	else
-		false	# Format d'archive non pris en charge.
-	fi
-	# Copie les fichiers sources
-	sudo cp -a $(cat ../sources/source_dir)/. "$final_path"
-	# Copie les fichiers additionnels ou modifiés.
-	if test -e "../sources/ajouts"; then
-		sudo cp -a ../sources/ajouts/. "$final_path"
-	fi
-}
-
 ADD_SYS_USER () {   # Créer un utilisateur système dédié à l'app
         if ! ynh_system_user_exists "$app"	# Test l'existence de l'utilisateur
         then
