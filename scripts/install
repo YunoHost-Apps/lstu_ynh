@@ -49,10 +49,9 @@ ynh_app_setting_set $app always_encrypt $always_encrypt
 
 
 # Créer le repertoire de destination et stocke son emplacement.
-sudo mkdir "$final_path"
 ynh_app_setting_set $app final_path $final_path
 
-SETUP_SOURCE "lutim.tar.gz"	# Télécharge la source, décompresse et copie dans $final_path
+git clone https://framagit.org/luc/lstu.git $final_path	# Télécharge la source, décompresse et copie dans $final_path
 
 # Copie le fichier de config nginx
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
