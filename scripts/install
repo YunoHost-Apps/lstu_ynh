@@ -72,27 +72,16 @@ sudo sed -i "s@__PORT__@$port@g" "$final_path/lstu.conf"
 codename=$(lsb_release -a 2>/dev/null | grep Codename | cut -f 2)
 CHECK_VAR "$codename" "codename empty"
 ynh_app_setting_set $app codename $codename
-if [ "$codename" = "wheezy" ]
-then	# On utilise le script init pour wheezy.
-	# Mise en place du script init
-	sudo cp ../conf/lstu.init /etc/init.d/lstu
-	sudo cp ../conf/lstu.default /etc/default/lstu
-	sudo chmod +x /etc/init.d/lstu
-	sudo chown root: /etc/init.d/lstu /etc/default/lstu
-	sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/default/lstu
-	## Démarrage auto du service
-	sudo update-rc.d lstu defaults
-else	# Et le script systemd à partir de jessie
-	# Mise en place du script systemd
+sudo cp utilities/lstu.default /etc/default/lstu
+
 	sudo cp ../conf/lstu.service /etc/systemd/system/lstu.service
 	sudo chown root: /etc/systemd/system/lstu.service
 	sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/lstu.service
 	## Démarrage auto du service
 	sudo systemctl enable lstu.service
-fi
 
 ## Mise en place des crons
-sudo cp ../conf/cron_lutim /etc/cron.d/$app
+sudo cp ../conf/cron_lstu /etc/cron.d/$app
 sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/cron.d/$app
 sudo chmod +x $final_path/script/lstu
 
