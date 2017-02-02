@@ -1,0 +1,63 @@
+{
+	"name": "Lstu",
+	"id": "lstu",
+	"packaging_format": 1,
+	"requirements": {
+		"yunohost": ">= 2.4"
+	},
+	"description": {
+		"en": "URL Shortener",
+		"fr": "Raccoursisseur d'URL"
+	},
+	"url": "https://lstu.fr",
+	"license": "WTFPL",
+	"maintainer": {
+		"name": "frj365",
+		"email": "win10@tutanota.com"
+	},
+	"multi_instance": false,
+	"services": [
+		"nginx"
+	],
+	"arguments": {
+		"install" : [
+			{
+				"name": "domain",
+				"type": "domain",
+				"ask": {
+					"en": "Choose a domain for Lstu",
+					"fr": "Choisissez un domaine pour Lstu"
+				},
+				"example": "domain.org"
+			},
+			{
+				"name": "path",
+				"type": "path",
+				"ask": {
+					"en": "Choose a path for Lstu",
+					"fr": "Choisissez un chemin pour Lstu"
+				},
+				"example": "/lstu",
+				"default": "/lstu"
+			},
+			{
+				"name": "admin",
+				"type": "user",
+				"ask": {
+					"en": "Choose the Lutim administrator (must be an existing YunoHost user)",
+					"fr": "Choisissez un administrateur Lutim (doit être un utilisateur YunoHost)"
+				},
+				"example": "john"
+			},
+			{
+				"name": "is_public",
+				"ask": {
+					"en": "Uploading images is it public?",
+					"fr": "L'upload des images est-il public ?"
+				},
+				"choices": ["Yes", "No"],
+				"default": "No"
+			}
+		]
+	}
+}
