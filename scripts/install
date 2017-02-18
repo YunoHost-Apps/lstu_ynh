@@ -78,11 +78,6 @@ sudo cp "$final_path/utilities/lstu.default" /etc/default/lstu
 	## Démarrage auto du service
 	sudo systemctl enable lstu.service
 
-## Mise en place des crons
-sudo cp ../conf/cron_lstu /etc/cron.d/$app
-sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/cron.d/$app
-sudo chmod +x $final_path/script/lstu
-
 # Configuration de logrotate
 sed -i "s@__FINALPATH__@$final_path@g" ../conf/logrotate
 sudo cp ../conf/logrotate /etc/logrotate.d/$app
