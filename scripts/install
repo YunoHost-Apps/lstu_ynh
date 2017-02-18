@@ -126,7 +126,7 @@ sudo ln -s /var/log/$app/production.log "$final_path/log/production.log"
 sudo chown -R www-data: $final_path
 
 # Start lutim
-sudo service lutim start
+sudo service lstu start
 # Set right permissions on new files created at first start
 sudo chown -R www-data: "$final_path"
 
