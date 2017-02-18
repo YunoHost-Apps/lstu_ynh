@@ -50,7 +50,7 @@ ynh_app_setting_set $app port $port
 # Créer le repertoire de destination et stocke son emplacement.
 ynh_app_setting_set $app final_path $final_path
 
-git clone https://framagit.org/luc/lstu.git $final_path	# Télécharge la source, décompresse et copie dans $final_path
+sudo git clone https://framagit.org/luc/lstu.git $final_path	# Télécharge la source, décompresse et copie dans $final_path
 
 # Copie le fichier de config nginx
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
