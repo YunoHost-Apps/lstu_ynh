@@ -70,7 +70,7 @@ sudo sed -i "s@__PORT__@$port@g" "$final_path/lstu.conf"
 codename=$(lsb_release -a 2>/dev/null | grep Codename | cut -f 2)
 CHECK_VAR "$codename" "codename empty"
 ynh_app_setting_set $app codename $codename
-sudo cp utilities/lstu.default /etc/default/lstu
+sudo cp "$final_path/utilities/lstu.default" /etc/default/lstu
 
 	sudo cp ../conf/lstu.service /etc/systemd/system/lstu.service
 	sudo chown root: /etc/systemd/system/lstu.service
