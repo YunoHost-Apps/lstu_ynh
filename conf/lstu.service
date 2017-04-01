@@ -10,9 +10,9 @@ User=www-data
 RemainAfterExit=yes
 WorkingDirectory=/var/www/lstu
 PIDFile=/var/www/lstu/script/hypnotoad.pid
-ExecStart=/usr/bin/carton exec hypnotoad script/lstu >> /var/log/lutim/production.log 2>&1
-ExecStop=/usr/bin/carton exec hypnotoad -s script/lstu >> /var/log/lutim/production.log 2>&1
-ExecReload=/usr/bin/carton exec hypnotoad script/lstu >> /var/log/lutim/production.log 2>&1
+ExecStart=/usr/bin/carton exec hypnotoad script/lstu
+ExecStop=/usr/bin/carton exec hypnotoad -s script/lstu
+ExecReload=/usr/bin/carton exec hypnotoad script/lstu
 
 [Install]
 WantedBy=multi-user.target
