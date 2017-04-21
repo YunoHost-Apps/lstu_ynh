@@ -1,0 +1,97 @@
+#!/bin/bash
+# vim:set noexpandtab:
+# This restore script is adapted to Yunohost >=2.4
+
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+# Source app helpers
+source /usr/share/yunohost/helpers
+
+# The parameter $app is the id of the app instance ex: ynhexample__2
+app=$YNH_APP_INSTANCE_NAME
+
+# Get old parameter of the app
+domain=$(ynh_app_setting_get $app domain)
+path=$(ynh_app_setting_get $app path)
+is_public=$(ynh_app_setting_get $app is_public)
+
+ynh_package_update
+ynh_package_install build-essential libssl-dev libpq-dev
+echo yes | sudo cpan Carton
+
+# Check domain/path availability
+sudo yunohost app checkurl "${domain}${path}" -a "${app}" \
+    || ynh_die "Path not available: ${domain}${path}"
+
+# Check $final_path
+final_path="/var/www/${app}"
+if [ -d "${final_path}" ]; then
+	ynh_die "There is already a directory: ${final_path}"
+fi
+
+# Check configuration files nginx
+nginx_conf="/etc/nginx/conf.d/${domain}.d/${app}.conf"
+if [ -f "${nginx_conf}" ]; then
+	ynh_die "The NGINX configuration already exists at '${nginx_conf}'. You should safely delete it before restoring this app."
+fi
+
+# Check configuration files lstu
+lstu_conf="${final_path}/${app}.conf"
+if [ -f "${lstu_conf}" ]; then
+	ynh_die "The LSTU CONF configuration already exists at '${lstu_conf}'. You should safely delete it before restoring this app."
+fi
+
+lstu_systemd="/etc/systemd/system/${app}.service"
+if [ -f "${lstu_systemd}" ]; then
+	ynh_die "The LSTU SYSTEMD configuration already exists at '${lstu_systemd}'. You should safely delete it before restoring this app."
+fi
+
+lstu_logrotate="/etc/logrotate.d/${app}"
+if [ -f "${lstu_logrotate}" ]; then
+	ynh_die "The LSTU LOGROTATE configuration already exists at '${lstu_logrotate}'. You should safely delete it before restoring this app."
+fi
+
+lstu_log="/var/log/${app}/production.log"
+if [ -f "${lstu_log}" ]; then
+	ynh_die "The LSTU LOG configuration already exists at '${lstu_log}'. You should safely delete it before restoring this app."
+fi
+
+ # Restore sources & data
+sudo cp -a ./sources "${final_path}"
+
+# Set permissions
+sudo chown -R www-data: "${final_path}"
+
+# Restore nginx configuration files
+sudo cp -a ./nginx.conf   "${nginx_conf}"
+
+# Restore lstu configuration files
+sudo cp -a ./lstu.conf "${lstu_conf}"
+
+# Restore service
+sudo cp -a ./systemd_lstu.service "${lstu_systemd}"
+
+sudo cp -a ./logrotate_lstu "${lstu_logrotate}"
+
+# Create log production
+sudo mkdir "/var/log/${app}/"
+sudo cp -a ./production.log "${lstu_log}"
+# Delete symbolic link and restore
+sudo rm -fr "${final_path}/log/production.log"
+sudo ln -s "/var/log/${app}/production.log" "${final_path}/log/production.log"
+
+# Reload lstu service
+sudo systemctl daemon-reload
+sudo systemctl start lstu.service
+sudo systemctl enable lstu.service
+
+# Set ssowat config
+if [ $is_public -eq 0 ];
+then
+	ynh_app_setting_delete $app skipped_uris
+fi
+
+# Reload services
+sudo systemctl reload nginx
+sudo yunohost app ssowatconf

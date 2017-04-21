@@ -1,85 +1,91 @@
 #!/bin/bash
+# vim:set noexpandtab:
 
-source .fonctions	# Charge les fonctions génériques habituellement utilisées dans le script
+# Exit on command errors and treat unset variables as an error
+set -eu
+
+source .fonctions	# Loads the generic functions usually used in the script
+source /usr/share/yunohost/helpers # Source app helpers
 
 CLEAN_SETUP () {
-# Nettoyage des résidus d'installation non pris en charge par le script remove.
-# Pas de nettoyage supplémentaire nécessaire ici...
+	# Clean installation residues that are not supported by the remove script.
+	# Clean hosts
 	echo ""
 }
-TRAP_ON	# Active trap pour arrêter le script si une erreur est détectée.
+TRAP_ON	# Active trap to stop the script if an error is detected.
 
 # Retrieve arguments
 domain=$YNH_APP_ARG_DOMAIN
 path=$YNH_APP_ARG_PATH
-admin=$YNH_APP_ARG_ADMIN
 is_public=$YNH_APP_ARG_IS_PUBLIC
 
 app=$YNH_APP_INSTANCE_NAME
 
-# Source app helpers
-source /usr/share/yunohost/helpers
-
 script_dir=$PWD
 
-# Vérifie que les variables ne sont pas vides.
+# Check variables are not empty
 CHECK_VAR "$app" "app name not set"
 CHECK_VAR "$script_dir" "script_dir not set"
 
+CHECK_PATH	# Check and fix path syntax
+CHECK_DOMAINPATH	# Check and fix domain disponibility
 
-CHECK_USER "$admin"	# Vérifie la validité de l'user admin
+CHECK_FINALPATH	# Check final path
 
-CHECK_PATH	# Vérifie et corrige la syntaxe du path.
-CHECK_DOMAINPATH	# Vérifie la disponibilité du path et du domaine.
-
-CHECK_FINALPATH	# Vérifie que le dossier de destination n'est pas déjà utilisé.
-
-# Modifie le domaine pour qu'il passe dans une regex
+# Check domain with regex
 domain_regex=$(echo "$domain" | sed 's@-@.@g')
 CHECK_VAR "$domain_regex" "domain_regex empty"
 
-FIND_PORT 8080	# Cherche un port libre.
+FIND_PORT 8096	# Check port availability
 
-# Enregistre les infos dans la config YunoHost
-ynh_app_setting_set $app admin $admin
+# Save app settings
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app port $port
 
+# Install dependencies
+ynh_package_update
+ynh_package_install build-essential libssl-dev libpq-dev
 
-# Créer le repertoire de destination et stocke son emplacement.
+# Copy files to the right place
+sudo mkdir "${final_path}"
 ynh_app_setting_set $app final_path $final_path
 
-sudo git clone https://framagit.org/luc/lstu.git $final_path	# Télécharge la source, décompresse et copie dans $final_path
+# Get source
+SETUP_SOURCE
 
-# Copie le fichier de config nginx
+# Copy it to Nginx conf directory
 sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
 
+if [ $is_public -eq 1 ];
+then
+	sudo sed -i "s@#--PRIVATE--@@g" /etc/nginx/conf.d/$domain.d/$app.conf
+fi
 
-# Installation de perlmagick, interface perl pour imagemagick et de carton, gestionnaire de dépendances perl
-sudo apt-get update
-sudo apt-get install carton perlmagick -qy
+## Copy and fix variable into lstu config
+sudo cp ../conf/lstu.conf.template "${final_path}/lstu.conf"
+sudo sed -i "s@__DOMAIN__@$domain@g" "${final_path}/lstu.conf"
+sudo sed -i "s@__PATH__@$path@g" "${final_path}/lstu.conf"
+sudo sed -i "s@__PORT__@$port@g" "${final_path}/lstu.conf"
 
-## Copie et configuration du fichier de conf.
-sudo cp ../conf/lstu.conf.template "$final_path/lstu.conf"
-sudo sed -i "s@__DOMAIN__@$domain@g" "$final_path/lstu.conf"
-sudo sed -i "s@__PATH__@$path@g" "$final_path/lstu.conf"
-sudo sed -i "s@__PORT__@$port@g" "$final_path/lstu.conf"
+secret=$(ynh_string_random 24)
+CHECK_VAR "$secret" "secret empty"
+sudo sed -i "s@__SECRET__@$secret@g" "${final_path}/lstu.conf"
+STORE_MD5_CONFIG "lstu.conf" "${final_path}/lstu.conf"
 
+# Install systemd script
+sudo cp ../conf/lstu.service /etc/systemd/system/lstu.service
+sudo chown root: /etc/systemd/system/lstu.service
+sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/lstu.service
 
-codename=$(lsb_release -a 2>/dev/null | grep Codename | cut -f 2)
-CHECK_VAR "$codename" "codename empty"
-ynh_app_setting_set $app codename $codename
-sudo cp "$final_path/utilities/lstu.default" /etc/default/lstu
+# Install logrotate
+sudo cp ../conf/logrotate /etc/logrotate.d/$app
+sed -i "s@__FINALPATH__@$final_path@g" /etc/logrotate.d/$app
 
-	sudo cp ../conf/lstu.service /etc/systemd/system/lstu.service
-	sudo chown root: /etc/systemd/system/lstu.service
-	sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/lstu.service
-	## Démarrage auto du service
-	sudo systemctl enable lstu.service
+# Install Carton
+echo yes | sudo cpan Carton
 
-
-# Installation de lstu via carton
+# Install lstu's dependencies via carton
 sudo mkdir -p /var/log/$app/
 cd $final_path
 sudo carton install 2>&1 | sudo tee -a "/var/log/$app/setup_carton.log"
@@ -90,12 +96,12 @@ sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
 
 # Make app public or private
 ynh_app_setting_set $app skipped_uris "/"
-if [ "$is_public" = "No" ];
-then	# Si l'app est privée, seul le visionnage des images reste public
+if [ $is_public -eq 0 ];
+then	# If the app is private, only the shortened URLs are publics
 	if [ "$path" == "/" ]; then
-	    path=""	# Si path correspond à la racine, supprime le / pour éviter une erreur de la regex.
+		path=""
 	fi
-	ynh_app_setting_set $app protected_regex "$domain_regex$path/stats$","$domain_regex$path/manifest.webapp$","$domain_regex$path/$","$domain_regex$path/d/.*$","$domain_regex$path/m/.*$"
+	ynh_app_setting_set $app protected_regex "$domain_regex$path/login$","$domain_regex$path/logout$","$domain_regex$path/api$","$domain_regex$path/extensions$","$domain_regex$path/stats$","$domain_regex$path/d/.*$","$domain_regex$path/a$","$domain_regex$path/$"
 fi
 
 # Making log symbolic link to /var/log
@@ -103,20 +109,27 @@ sudo touch /var/log/$app/production.log
 sudo chown www-data: /var/log/$app/production.log
 sudo ln -s /var/log/$app/production.log "$final_path/log/production.log"
 
-# Configure les droits d'accès au fichiers
+# Configure owner
 sudo chown -R www-data: $final_path
 
-# Start lutim
-sudo service lstu start
+# Start lstu
+sudo systemctl daemon-reload
+sudo systemctl start lstu.service
+sudo systemctl enable lstu.service
+
 # Set right permissions on new files created at first start
 sudo chown -R www-data: "$final_path"
 
-
-# Add lutim as a service
+# Add lstu as a service
 sudo yunohost service add lstu -l $final_path/log/production.log
 
+if [ $is_public -eq 0 ];
+then
+	# Delete public access
+	ynh_app_setting_delete $app unprotected_uris
+	# Regenerate SSOwat's configuration
+	sudo yunohost app ssowatconf
+fi
 
-# Recharge la configuration Nginx
+# Reload Nginx
 sudo service nginx reload
-# Régénère la configuration de SSOwat
-sudo yunohost app ssowatconf

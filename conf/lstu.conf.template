@@ -66,11 +66,27 @@
     # optional
     #fixed_domain => 'example.org',
 
+    # choose what database you want to use
+    # valid choices are sqlite and postgresql (all lowercase)
+    # optional, default is sqlite
+    #dbtype => 'sqlite',
+
+    # SQLite ONLY - only used if dbtype is set to sqlite
     # define a path to the SQLite database
     # you can define it relative to lstu directory or set an absolute path
     # remember that it has to be in a directory writable by Lstu user
     # optional, default is lstu.db
     #db_path           => 'lstu.db',
+
+    # PostgreSQL ONLY - only used if dbtype is set to postgresql
+    # these are the credentials to access the PostgreSQL database
+    # mandatory if you choosed postgresql as dbtype
+    #pgdb => {
+    #    database => 'lstu',
+    #    host     => 'localhost',
+    #    #user     => 'DBUSER',
+    #    #pwd      => 'DBPASSWORD'
+    #},
 
     # Rate-limiting for the API
     # After ban_min_strike requests in a second, the IP address will be
@@ -79,6 +95,14 @@
     # ban_min_strike times, it will be banned for a month.
     # optional, default is 3
     ban_min_strike    => 3,
+
+    # Ban whitelist
+    # You can whitelist IP addresses to prevent you from being banned
+    # Be careful, the IP addresses are compared as string, not as IP addresses
+    # a network range will not work
+    # Example of valid input: ban_whitelist => ['198.51.100.42', '2001:0DB8::42'],¬
+    # optional, default is an empty array
+    #ban_whitelist => [],
 
     # define an URL to the Piwik instance and the ID of a website to track
     # set if you want to track views in Piwik

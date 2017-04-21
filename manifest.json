@@ -41,22 +41,13 @@
 				"default": "/lstu"
 			},
 			{
-				"name": "admin",
-				"type": "user",
-				"ask": {
-					"en": "Choose the Lutim administrator (must be an existing YunoHost user)",
-					"fr": "Choisissez un administrateur Lutim (doit être un utilisateur YunoHost)"
-				},
-				"example": "john"
-			},
-			{
 				"name": "is_public",
+				"type": "boolean",
 				"ask": {
-					"en": "Uploading images is it public?",
-					"fr": "L'upload des images est-il public ?"
+					"en": "Is it a public application?",
+					"fr": "Est-ce une application publique ?"
 				},
-				"choices": ["Yes", "No"],
-				"default": "No"
+				"default": false
 			}
 		]
 	}
