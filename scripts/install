@@ -80,7 +80,7 @@ sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/lstu.service
 
 # Install logrotate
 sudo cp ../conf/logrotate /etc/logrotate.d/$app
-sed -i "s@__FINALPATH__@$final_path@g" /etc/logrotate.d/$app
+sudo sed -i "s@__FINALPATH__@$final_path@g" /etc/logrotate.d/$app
 
 # Install Carton
 echo yes | sudo cpan Carton
