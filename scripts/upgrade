@@ -1,0 +1,132 @@
+#!/bin/bash
+# vim:set noexpandtab:
+
+set -eu
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source .fonctions
+source /usr/share/yunohost/helpers
+
+#=================================================
+# LOAD SETTINGS
+#=================================================
+
+app=$YNH_APP_INSTANCE_NAME
+
+domain=$(ynh_app_setting_get $app domain)
+path=$(ynh_app_setting_get $app path)
+is_public=$(ynh_app_setting_get $app is_public)
+port=$(ynh_app_setting_get $app port)
+final_path=$(ynh_app_setting_get $app final_path)
+secret=$(ynh_app_setting_get $app secret)
+
+#=================================================
+# FIX OLD THINGS
+#=================================================
+
+if [ "$is_public" = "Yes" ]; then
+	ynh_app_setting_set $app is_public 1	# Fixe is_public en booléen
+	is_public=1
+elif [ "$is_public" = "No" ]; then
+	ynh_app_setting_set $app is_public 0
+	is_public=0
+fi
+
+if [ "${#final_path}" -eq 0 ]
+then	# Si final_path n'est pas renseigné dans la config yunohost, cas d'ancien script, code final_path en dur
+	final_path=/var/www/$app
+fi
+
+CHECK_PATH	# Checks and corrects the syntax of the path.
+
+# Get source
+SETUP_SOURCE
+
+#=================================================
+# NGINX CONFIGURATION
+#=================================================
+
+# Copy Nginx configuration file
+sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
+# Modify Nginx configuration file
+sudo sed -i "s@__PATH__@$path@g" /etc/nginx/conf.d/$domain.d/$app.conf
+sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
+
+if [ $is_public -eq 1 ];
+then
+	sudo sed -i "s@#--PRIVATE--@@g" /etc/nginx/conf.d/$domain.d/$app.conf
+fi
+
+#=================================================
+# SPECIFIC UPGRADE
+#=================================================
+# SETUP LSTU
+#=================================================
+
+## Copie et configuration du fichier de conf.
+CHECK_MD5_CONFIG "lstu.conf" "$final_path/lstu.conf"	# Créé un backup du fichier de config si il a été modifié.
+sudo cp ../conf/lstu.conf.template "$final_path/lstu.conf"
+sudo sed -i "s@__DOMAIN__@$domain@g" "$final_path/lstu.conf"
+sudo sed -i "s@__PATH__@$path@g" "$final_path/lstu.conf"
+sudo sed -i "s@__PORT__@$port@g" "$final_path/lstu.conf"
+sudo sed -i "s@__SECRET__@$secret@g" "${final_path}/lstu.conf"
+STORE_MD5_CONFIG "lstu.conf" "$final_path/lstu.conf"	# Réenregistre la somme de contrôle du fichier de config
+
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+
+# Mise en place du script systemd
+sudo systemctl stop $app
+sudo cp ../conf/lstu.service /etc/systemd/system/$app.service
+sudo chown root: /etc/systemd/system/$app.service
+sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
+##
+sudo systemctl daemon-reload
+## Démarrage auto du service
+sudo systemctl enable $app
+
+#=================================================
+# UPDATE LSTU'S DEPENDENCIES WITH CARTON
+#=================================================
+
+pushd $final_path	# cd avec une stack pour revenir en arrière
+echo yes | sudo carton install 2>&1 | sudo tee -a "/var/log/$app/setup_carton.log"
+popd	# Revient au dossier courant avant pushd
+
+#=================================================
+# SECURING FILES AND DIRECTORIES
+#=================================================
+
+sudo chown -R www-data: $final_path
+
+#=================================================
+# RESTART LSTU
+#=================================================
+
+sudo systemctl start lstu.service
+
+#=================================================
+# SETUP SSOWAT
+#=================================================
+
+ynh_app_setting_set $app skipped_uris "/"
+if [ $is_public -eq 0 ];
+then	# If the app is private, only the shortened URLs are publics
+	if [ "$path" == "/" ]; then
+		path=""
+	fi
+	ynh_app_setting_set $app protected_regex "$domain_regex$path/login$","$domain_regex$path/logout$","$domain_regex$path/api$","$domain_regex$path/extensions$","$domain_regex$path/stats$","$domain_regex$path/d/.*$","$domain_regex$path/a$","$domain_regex$path/$"
+fi
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+
+sudo systemctl reload nginx
+sudo yunohost app ssowatconf
