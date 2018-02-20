@@ -1,18 +1,20 @@
 #!/bin/bash
-# vim:set noexpandtab:
 
-# Exit on command errors and treat unset variables as an error
-set -eu
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-source .fonctions	# Loads the generic functions usually used in the script
-source /usr/share/yunohost/helpers # Source app helpers
+source _common.sh
+source /usr/share/yunohost/helpers
 
-CLEAN_SETUP () {
-	# Clean installation residues that are not supported by the remove script.
-	# Clean hosts
-	echo ""
-}
-TRAP_ON	# Active trap to stop the script if an error is detected.
+#=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
 
 # Retrieve arguments
 domain=$YNH_APP_ARG_DOMAIN
