@@ -1,0 +1,6 @@
+SOURCE_URL=https://framagit.org/luc/lstu/repository/2b5e5fc2aa50d0e14d976722151031a5243e3995/archive.tar.gz
+SOURCE_SUM=391167a1234d35bedb9e3a4d8a15e297c75fa0f1a54cc961bf6aac0be44c2a3a
+SOURCE_SUM_PRG=sha256sum
+SOURCE_FORMAT=tar.gz
+SOURCE_IN_SUBDIR=true
+SOURCE_FILENAME=
