@@ -1,47 +1,82 @@
 #!/bin/bash
-# vim:set noexpandtab:
 
-# Exit on command errors and treat unset variables as an error
-set -u
+#=================================================
+# GENERIC START
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
 
-source .fonctions	# Loads the generic functions usually used in the script
-source /usr/share/yunohost/helpers # Source app helpers
+source _common.sh
+source /usr/share/yunohost/helpers
 
-# Get multi-instances specific variables
+#=================================================
+# LOAD SETTINGS
+#=================================================
 app=$YNH_APP_INSTANCE_NAME
 
+final_path=$(ynh_app_setting_get $app final_path)
+port=$(ynh_app_setting_get $app port)
 domain=$(ynh_app_setting_get $app domain)
 
-# Stop lstu service
-if [ -e "/etc/systemd/system/lstu.service" ]; then
-	echo "Delete systemd script"
-	sudo systemctl stop lstu.service
-	sudo systemctl disable lstu.service
-	sudo rm "/etc/systemd/system/lstu.service"
-	systemctl daemon-reload
-fi
+#=================================================
+# STANDARD REMOVE
+#=================================================
+# STOP AND REMOVE SERVICE
+#=================================================
 
-# Remove monitoring service Yunohost.
-if sudo yunohost service status | grep -q lstu	# Test the existence of the service in Yunohost
+# Remove the dedicated systemd config
+ynh_remove_systemd_config
+
+#=================================================
+# REMOVE SERVICE FROM ADMIN PANEL
+#=================================================
+
+if yunohost service status | grep -q $app
 then
-	echo "Remove lstu service"
-	sudo yunohost service remove lstu
+	echo "Remove $app service"
+	yunohost service remove $app
 fi
 
-SECURE_REMOVE '/var/www/$app'	# Delete directory application
+#=================================================
+# REMOVE APP MAIN DIR
+#=================================================
 
-REMOVE_NGINX_CONF	# Delete nginx configuration
+# Remove the app directory securely
+ynh_secure_remove "$final_path"
 
+#=================================================
+# REMOVE NGINX CONFIGURATION
+#=================================================
 
-SECURE_REMOVE '/var/log/$app/'	# Delete log
+# Remove the dedicated nginx config
+ynh_remove_nginx_config
 
-REMOVE_LOGROTATE_CONF	# Delete logrotate configuration
+#=================================================
+# Delete Log
+#=================================================
 
-ynh_package_remove build-essential	|| echo "build-essential already uninstalled"
-ynh_package_remove libssl-dev		|| echo "libssl-dev already uninstalled"
-ynh_package_remove libpq-dev		|| echo "libpq-dev already uninstalled"
+ynh_secure_remove "/var/log/$app/"
 
-# Reload SSOwat configuration
-sudo yunohost app ssowatconf
+#=================================================
+# REMOVE LOGROTATE CONFIGURATION
+#=================================================
 
-echo -e "\e[0m"	# Restore normal color
+# Remove the app-specific logrotate config
+ynh_remove_logrotate
+
+#=================================================
+# CLOSE A PORT
+#=================================================
+
+if yunohost firewall list | grep -q "\- $port$"
+then
+	echo "Close port $port"
+	yunohost firewall disallow TCP $port 2>&1
+fi
+
+#=================================================
+# REMOVE DEPENDENCIES
+#=================================================
+
+# Remove metapackage and its dependencies
+ynh_remove_app_dependencies
