@@ -9,7 +9,7 @@ set -eu
 # IMPORT GENERIC HELPERS
 #=================================================
 
-source .fonctions
+source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
