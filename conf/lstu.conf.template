@@ -9,12 +9,12 @@
         listen => ['http://127.0.0.1:__PORT__'],
         # if you use Lstu behind a reverse proxy like Nginx, you want to set proxy to 1
         # if you use Lstu directly, let it commented
-        #proxy  => 1,
+        proxy  => 1,
     },
 
     # put a way to contact you here and uncomment it
     # MANDATORY
-    contact => 'webmaster@__DOMAIN__',
+    contact       => 'webmaster[at]__DOMAIN__',
 
     # array of random strings used to encrypt cookies
     # optional, default is ['fdjsofjoihrei'], PLEASE, CHANGE IT
@@ -24,12 +24,12 @@
     # If you don't want to have a plain text password in configuration,
     # use hashed_adminpwd instead
     # optional, but you won't have access to admin /stats if not set and if hashed_adminpwd is not set either
-    #adminpwd      => 's3cr3T',
+    adminpwd      => '__ADMINPASS__',
 
     # secret hashed passphrase to access some admin features
     # Hash your password by issuing `echo -n s3cr3T | sha256sum` on your terminal
     # optional, but you won't have access to admin /stats if not set and if adminpwd is not set either
-    #hashed_adminpwd => '94b2feede6ea5e2eec62f457ecb7d3f719b24d19c29d4e5466246a31908fc23b',
+    hashed_adminpwd => '__ADMINHASH__',
 
     # choose a theme. See the available themes in `themes` directory
     # optional, default is 'default'
@@ -55,7 +55,7 @@
     # example: you want to have Lstu under https://example.org/lstu/
     # => set prefix to '/lstu' or to '/lstu/', it doesn't matter
     # optional, defaut is /
-    prefix       => '__PATH__',
+    prefix        => '__PATH__',
 
     # array of authorized domains for API calls.
     # if you want to authorize everyone to use the API: ['*']
@@ -67,9 +67,9 @@
     #fixed_domain => 'example.org',
 
     # choose what database you want to use
-    # valid choices are sqlite and postgresql (all lowercase)
+    # valid choices are sqlite, postgresql and mysql (all lowercase)
     # optional, default is sqlite
-    #dbtype => 'sqlite',
+    dbtype => 'mysql',
 
     # SQLite ONLY - only used if dbtype is set to sqlite
     # define a path to the SQLite database
@@ -84,8 +84,26 @@
     #pgdb => {
     #    database => 'lstu',
     #    host     => 'localhost',
-    #    #user     => 'DBUSER',
-    #    #pwd      => 'DBPASSWORD'
+    #    # optional, default is 5432
+    #    #port     => 5432,
+    #    user     => 'DBUSER',
+    #    pwd      => 'DBPASSWORD',
+    #    # optional, default is 1
+    #    #max_connections => 1,
+    #},
+
+    # MySQL ONLY - only used if dbtype is set to mysql
+    # these are the credentials to access the MySQL database
+    # mandatory if you choosed mysql as dbtype
+    mysqldb => {
+        database => '__DBNAME__',
+        host     => 'localhost',
+        # optional, default is 3306
+        #port     => 3306,
+        user     => '__DBUSER__',
+        pwd      => '__DBPASS__',
+        # optional, default is 5 (set to 0 to disable persistent connections)
+        #max_connections => 5,
     #},
 
     # Rate-limiting for the API
@@ -115,21 +133,50 @@
     # use Minion instead of directly increase counters
     # need to launch a minion worker service if enabled
     # optional, Minion is disabled by default
+    # It will use the same DB type as Lstu: sqlite if you choose sqlite for `dbtype`,
+    # postgresql for postgresql, etc.
     #minion => {
     #    enabled => 0,
-    #    db_path => 'minion.db' # you can define it relative to lstu directory or set an absolute path
+    #    # SQLite ONLY - only used if if you choose sqlite as DB type,
+    #    # define the path to the minion database
+    #    # you can define it relative to lstu directory or set an absolute path
+    #    # remember that it has to be in a directory writable by Lutim user
+    #    # optional, default is minion.db
+    #    db_path => 'minion.db',
+    #    # PostgreSQL ONLY - only used if you choose postgresql as DB type
+    #    # these are the credentials to access the Minion's PostgreSQL database
+    #    # mandatory if you choosed postgresql as DB type, no default
+    #    pgdb => {
+    #        database => 'lstu_minion',
+    #        host     => 'localhost',
+    #        # optional, default is 5432
+    #        #port     => 5432,
+    #        user     => 'DBUSER',
+    #        pwd      => 'DBPASSWORD'
+    #    },
+    #    # MySQL ONLY - only used if you choose mysql as DB type
+    #    # these are the credentials to access the Minion's MySQL database
+    #    # mandatory if you choosed mysql as DB type, no default
+    #    mysqldb => {
+    #        database => 'lstu_minion',
+    #        host     => 'localhost',
+    #        # optional, default is 3306
+    #        #port     => 3306,
+    #        user     => 'DBUSER',
+    #        pwd      => 'DBPASSWORD',
+    #    },
     #},
 
     # set `ldap` if you want that only authenticated users can shorten URLs
     # please note that everybody can still use shortend URLs
     # optional, no default
     #ldap => {
-    #    uri         => 'ldaps://ldap.example.org',
-    #    user_tree   => 'ou=users,dc=example,dc=org',
-    #    bind_dn     => ',ou=users,dc=example,dc=org',
-    #    bind_user   => 'uid=ldap_user',
-    #    bind_pwd    => 'secr3t',
-    #    user_filter => '!(uid=ldap_user)'
+    #    uri         => 'ldaps://ldap.example.org',                 # server URI
+    #    user_tree   => 'ou=users,dc=example,dc=org',               # search base DN
+    #    bind_dn     => 'uid=ldap_user,ou=users,dc=example,dc=org', # search bind DN
+    #    bind_pwd    => 'secr3t',                                   # search bind password
+    #    user_attr   => 'uid',                                      # user attribute (uid, mail, sAMAccountName, etc.)
+    #    user_filter => '(!(uid=ldap_user))',                       # user filter (to exclude some users, etc.)
     #},
 
     # set `htpasswd` if you want to use an htpasswd file instead of ldap
@@ -142,4 +189,58 @@
     # the user needs to reauthenticate
     # optional, default is 3600
     #session_duration => 3600,
+
+    # how many redirections are allowed for the shortened URL before considering it as a spam?
+    # optional, default is 2. Set to -1 to allow infinite redirections (not recommended)
+    #max_redir => 2,
+
+    # spam blacklist regex. All URLs (or redirection) whose host part matches this regex are considered as spam
+    # optional, no default
+    #spam_blacklist_regex => 'foo|bar',
+
+    # spam path blacklist regex. All URLs (or redirection) whose path part matches this regex are considered as spam
+    # optional, no default
+    #spam_path_blacklist_regex => 'foo|bar',
+
+    # spam whitelist regex. All URLs (or redirection) whose host part matches this regex will never be considered as spam
+    # optional, no default
+    #spam_whitelist_regex => 'foo|bar',
+
+    # set to 1 to skip SpamHaus check (not recommended)
+    # optional, default is 0
+    #skip_spamhaus => 0,
+
+    # array of memcached servers to cache URL in order to accelerate responses to often-viewed URL.
+    # If set to [], the cache is disabled
+    # optional, default is []
+    #memcached_servers => [],
+
+    # Content-Security-Policy header that will be sent by Lstu
+    # Set to '' to disable CSP header
+    # https://content-security-policy.com/ provides a good documentation about CSP.
+    # https://report-uri.com/home/generate provides a tool to generate a CSP header.
+    # optional, default is "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; form-action 'self'; base-uri 'self'"
+    # the default value is good for `default` and `milligram` themes
+    csp => "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; form-action 'self'; base-uri 'self'",
+
+    # X-Frame-Options header that will be sent by Lstu
+    # Valid values are: 'DENY', 'SAMEORIGIN', 'ALLOW-FROM https://example.com/'
+    # Set to '' to disable X-Frame-Options header
+    # See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Frame-Options
+    # Please note that this will add a "frame-ancestors" directive to the CSP header (see above) accordingly
+    # to the chosen setting (See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors)
+    # optional, default is 'DENY'
+    x_frame_options => 'DENY',
+
+    # X-Content-Type-Options that will be sent by Lstu
+    # See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
+    # Set to '' to disable X-Content-Type-Options header
+    # optional, default is 'nosniff'
+    x_content_type_options => 'nosniff',
+
+    # X-XSS-Protection that will be sent by Lstu
+    # See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-XSS-Protection
+    # Set to '' to disable X-XSS-Protection header
+    # optional, default is '1; mode=block'
+    x_xss_protection => '1; mode=block',
 };
