@@ -185,7 +185,7 @@ fi
 #=================================================
 
 touch /var/log/$app/production.log 
-chown www-data: /var/log/$app/production.log
+chown $app:$app /var/log/$app/production.log
 ln -s /var/log/$app/production.log "$final_path/log/production.log"
 
 #=================================================
