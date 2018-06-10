@@ -157,7 +157,7 @@ ynh_use_logrotate
 
 pushd $final_path
 touch /var/log/$app/setup_carton.log
-carton install 2>&1 | sudo tee -a "/var/log/$app/setup_carton.log"
+carton install --deployment  --without=test --without=sqlite --without=postgresql 2>&1 | sudo tee -a "/var/log/$app/setup_carton.log"
 popd
 
 #=================================================
@@ -166,6 +166,8 @@ popd
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
+
+chown $app:$app $final_path -R
 
 #=================================================
 # Make app public or private
