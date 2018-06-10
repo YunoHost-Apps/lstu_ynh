@@ -23,6 +23,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
+admin_pass=$YNH_APP_ADMIN_PASS
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -50,6 +51,7 @@ ynh_webpath_register $app $domain $path_url
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app is_public $is_public
+ynh_app_setting_set $app admin_pass $admin_pass
 
 #=================================================
 # STANDARD MODIFICATIONS
@@ -68,6 +70,22 @@ ynh_app_setting_set $app port $port
 #=================================================
 
 ynh_install_app_dependencies build-essential libssl-dev libpq-dev libpng-dev
+
+#=================================================
+# CREATE A MYSQL DATABASE
+#=================================================
+# If your app uses a MySQL database, you can use these lines to bootstrap
+# a database, an associated user and save the password in app settings
+
+db_name=$(ynh_sanitize_dbid $app)
+ynh_app_setting_set $app db_name $db_name
+ynh_mysql_setup_db $db_name $db_name
+
+#=================================================
+# SET ADMIN HASH
+#=================================================
+
+admin_hash=$(echo -n $admin_pass | sha256sum)
 
 #=================================================
 # NGINX CONFIGURATION
@@ -111,8 +129,16 @@ echo yes | sudo cpan Carton
 
 cp ../conf/lstu.conf.template "${final_path}/lstu.conf"
 ynh_replace_string "__DOMAIN__" "$domain" "$final_path/lstu.conf"
+if [ "$path_url" == "" ]; then
+		ynh_replace_string "__PATH__" "/" "$final_path/lstu.conf"
+fi
 ynh_replace_string "__PATH__" "$path_url" "$final_path/lstu.conf"
 ynh_replace_string "__PORT__" "$port" "$final_path/lstu.conf"
+ynh_replace_string "__ADMINPASS__" "$admin_pass" "$final_path/lstu.conf"
+ynh_replace_string "__ADMINHASH__" "$admin_hash" "$final_path/lstu.conf"
+ynh_replace_string "__DBNAME__" "$db_name" "$final_path/lstu.conf"
+ynh_replace_string "__DBPASS__" "$db_pass" "$final_path/lstu.conf"
+ynh_replace_string "__DBUSER__" "$db_user" "$final_path/lstu.conf"
 
 secret=$(ynh_string_random 24)
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
