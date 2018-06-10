@@ -137,7 +137,7 @@ ynh_replace_string "__PORT__" "$port" "$final_path/lstu.conf"
 ynh_replace_string "__ADMINPASS__" "$admin_pass" "$final_path/lstu.conf"
 ynh_replace_string "__ADMINHASH__" "$admin_hash" "$final_path/lstu.conf"
 ynh_replace_string "__DBNAME__" "$db_name" "$final_path/lstu.conf"
-ynh_replace_string "__DBPASS__" "$db_pass" "$final_path/lstu.conf"
+ynh_replace_string "__DBPASS__" "$db_pwd" "$final_path/lstu.conf"
 ynh_replace_string "__DBUSER__" "$db_user" "$final_path/lstu.conf"
 
 secret=$(ynh_string_random 24)
