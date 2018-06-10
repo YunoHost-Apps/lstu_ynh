@@ -189,24 +189,10 @@ chown $app:$app /var/log/$app/production.log
 ln -s /var/log/$app/production.log "$final_path/log/production.log"
 
 #=================================================
-# Configure owner
-#=================================================
-
-sudo chown -R www-data: $final_path
-
-#=================================================
 # Start lstu
 #=================================================
 
-systemctl daemon-reload
 systemctl start lstu.service
-systemctl enable lstu.service
-
-#=================================================
-# Set right permissions on new files created at first start
-#=================================================
-
-sudo chown -R www-data: "$final_path"
 
 #=================================================
 # Add lstu as a service
