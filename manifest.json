@@ -2,8 +2,8 @@
 	"name": "Lstu",
 	"id": "lstu",
 	"packaging_format": 1,
-	"requirements": {
-		"yunohost": ">= 2.4"
+        "requirements": {
+        "yunohost": ">= 2.7.2"
 	},
 	"description": {
 		"en": "URL Shortener",
@@ -39,6 +39,15 @@
 				},
 				"example": "/lstu",
 				"default": "/lstu"
+			},
+			{
+               			"name": "admin_pass",
+                	 	"type": "password",
+                		"ask": {
+                    			"en": "Set the password for the SFTP access. ≥ 5 character",
+                    			"fr": "Définissez le mot de passe pour l'accès SFTP. ≥ cinq charactères"
+                		},
+               		 	"example": "myreallystrengthpassword"
 			},
 			{
 				"name": "is_public",
