@@ -23,7 +23,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
-admin_pass=$YNH_APP_ADMIN_PASS
+admin_pass=$YNH_APP_ARG_ADMIN_PASS
 
 app=$YNH_APP_INSTANCE_NAME
 
