@@ -143,11 +143,20 @@ ynh_replace_string "__DBUSER__" "$db_name" "$final_path/lstu.conf"
 secret=$(ynh_string_random 24)
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
 
+
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate
+
 #=================================================
 # Installation with Carton
 #=================================================
 
 pushd $final_path
+touch /var/log/$app/setup_carton.log
 carton install 2>&1 | sudo tee -a "/var/log/$app/setup_carton.log"
 popd
 
@@ -157,13 +166,6 @@ popd
 
 # Create a dedicated systemd config
 ynh_systemd_config
-
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-
-# Use logrotate to manage application logfile(s)
-ynh_use_logrotate
 
 #=================================================
 # Make app public or private
