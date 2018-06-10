@@ -14,6 +14,8 @@ source /usr/share/yunohost/helpers
 #=================================================
 app=$YNH_APP_INSTANCE_NAME
 
+db_name=$(ynh_app_setting_get $app db_name)
+db_user=$db_name
 final_path=$(ynh_app_setting_get $app final_path)
 port=$(ynh_app_setting_get $app port)
 domain=$(ynh_app_setting_get $app domain)
@@ -36,6 +38,13 @@ then
 	echo "Remove $app service"
 	yunohost service remove $app
 fi
+
+#=================================================
+# REMOVE THE MYSQL DATABASE
+#=================================================
+
+# Remove a database if it exists, along with the associated user
+ynh_mysql_remove_db $db_user $db_name
 
 #=================================================
 # REMOVE APP MAIN DIR
