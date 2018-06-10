@@ -6,7 +6,8 @@ After=network.target
 
 [Service]
 Type=forking
-User=www-data
+Group=__APP__
+User=__APP__
 RemainAfterExit=yes
 WorkingDirectory=__FINALPATH__
 PIDFile=__FINALPATH__script/hypnotoad.pid
