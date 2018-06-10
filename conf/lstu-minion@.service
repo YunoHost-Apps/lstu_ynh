@@ -4,7 +4,8 @@ Documentation=https://framagit.org/luc/lstu
 
 [Service]
 Type=simple
-User=www-data
+Group=__APP__
+User=__APP__
 WorkingDirectory=__FINALPATH__
 ExecStart=/usr/local/bin/carton exec script/application minion worker
 
