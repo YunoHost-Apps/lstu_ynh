@@ -165,7 +165,7 @@ popd
 #=================================================
 
 # Create a dedicated systemd config
-ynh_systemd_config
+ynh_add_systemd_config
 
 #=================================================
 # Make app public or private
