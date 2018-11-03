@@ -156,15 +156,6 @@ else
 	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
 fi
 
-
-#=================================================
-# Making log symbolic link to /var/log
-#=================================================
-
-touch /var/log/$app/production.log 
-chown $app:$app /var/log/$app/production.log
-ln -s /var/log/$app/production.log "$final_path/log/production.log"
-
 #=================================================
 # Configure owner
 #=================================================
