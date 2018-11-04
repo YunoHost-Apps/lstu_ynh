@@ -73,9 +73,23 @@ ynh_app_setting_set $app port $port
 # INSTALL DEPENDENCIES
 #=================================================
 
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
 # Install Carton
 echo yes | sudo cpan Carton
+
+#=================================================
+# CREATE A POSTGRESQL DATABASE
+#=================================================
+
+# Create postgresql database
+ynh_psql_test_if_first_run
+db_name=$(ynh_sanitize_dbid "$app")
+db_user=$db_name
+db_pwd=$(ynh_string_random)
+ynh_app_setting_set $app db_pwd $db_pwd
+ynh_app_setting_set "$app" db_name "$db_name"
+# Initialize database and store postgres password for upgrade
+ynh_psql_setup_db "$db_name" "$db_user"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -109,6 +123,9 @@ cp ../conf/lstu.conf.template "${final_path}/lstu.conf"
 ynh_replace_string "__DOMAIN__" "$domain" "${final_path}/lstu.conf"
 ynh_replace_string "__PATH__" "$path_url" "${final_path}/lstu.conf"
 ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
+ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
+ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
+ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
 
 secret=$(ynh_string_random 24)
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
