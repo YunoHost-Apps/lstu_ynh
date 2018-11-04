@@ -73,7 +73,7 @@ ynh_app_setting_set $app port $port
 # INSTALL DEPENDENCIES
 #=================================================
 
-ynh_install_app_dependencies build-essential libssl-dev libpq-dev
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev
 # Install Carton
 echo yes | sudo cpan Carton
 
