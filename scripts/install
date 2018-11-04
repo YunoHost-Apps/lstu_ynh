@@ -142,7 +142,7 @@ ynh_add_systemd_config
 # Install lstu's dependencies via carton
 #=================================================
 
-carton install 2>&1 | sudo tee -a "/var/log/$app/setup_carton.log"
+carton install
 
 #=================================================
 # SETUP LOGROTATE
