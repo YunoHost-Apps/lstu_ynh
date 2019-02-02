@@ -30,8 +30,6 @@ is_public=$YNH_APP_ARG_IS_PUBLIC
 
 app=$YNH_APP_INSTANCE_NAME
 
-script_dir=$PWD
-
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
@@ -68,6 +66,7 @@ yunohost firewall allow --no-upnp TCP $port 2>&1
 ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app port $port
+ynh_app_setting_set $app path $path_url
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -85,11 +84,10 @@ echo yes | sudo cpan Carton
 ynh_psql_test_if_first_run
 db_name=$(ynh_sanitize_dbid "$app")
 db_user=$db_name
-db_pwd=$(ynh_string_random)
-ynh_app_setting_set $app db_pwd $db_pwd
-ynh_app_setting_set "$app" db_name "$db_name"
 # Initialize database and store postgres password for upgrade
 ynh_psql_setup_db "$db_name" "$db_user"
+ynh_app_setting_set "$app" db_name "$db_name"
+db_pwd=$(ynh_app_setting_get $app psqlpwd) # Password created in ynh_psql_setup_db function
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -142,7 +140,9 @@ ynh_add_systemd_config
 # Install lstu's dependencies via carton
 #=================================================
 
-carton install
+pushd $final_path
+carton install --deployment --without=sqlite --without=mysql
+popd
 
 #=================================================
 # SETUP LOGROTATE
@@ -165,8 +165,8 @@ yunohost service add $app --log "/var/log/$app.log"
 ynh_app_setting_set $app skipped_uris "/"
 if [ $is_public -eq 0 ];
 then	# If the app is private, only the shortened URLs are publics
-	if [ "$path" == "/" ]; then
-		path=""
+	if [ "$path_url" == "/" ]; then
+		path_url=""
 	fi
 	ynh_app_setting_set $app protected_regex "$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
 else
@@ -177,14 +177,14 @@ fi
 # Configure owner
 #=================================================
 
-sudo chown -R $app:$app $final_path
+sudo chown -R www-data $final_path
 
 #=================================================
 # Start lstu
 #=================================================
 
 systemctl enable lstu.service
-systemctl start lstu.service
+systemctl start lstu
 
 #=================================================
 # RELOAD NGINX
