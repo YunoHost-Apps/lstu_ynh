@@ -1,10 +1,7 @@
 #!/bin/bash
-# vim:set noexpandtab:
-
-set -eu
 
 #=================================================
-# GENERIC STARTING
+# GENERIC START
 #=================================================
 # IMPORT GENERIC HELPERS
 #=================================================
@@ -13,17 +10,31 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+ynh_clean_setup () {
+	### Remove this function if there's nothing to clean before calling the remove script.
+	true
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # LOAD SETTINGS
 #=================================================
 
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
-path=$(ynh_app_setting_get $app path)
+path_url=$(ynh_app_setting_get $app path)
 is_public=$(ynh_app_setting_get $app is_public)
 port=$(ynh_app_setting_get $app port)
 final_path=$(ynh_app_setting_get $app final_path)
 secret=$(ynh_app_setting_get $app secret)
+db_name=$(ynh_app_setting_get $app db_name)
+db_user=$db_name
+db_pwd=$(ynh_app_setting_get $app psqlpwd)
 
 #=================================================
 # FIX OLD THINGS
@@ -42,25 +53,23 @@ then	# Si final_path n'est pas renseigné dans la config yunohost, cas d'ancien 
 	final_path=/var/www/$app
 fi
 
-CHECK_PATH	# Checks and corrects the syntax of the path.
+domain_regex=$(echo "$domain" | sed 's@-@.@g')
+CHECK_VAR "$domain_regex" "domain_regex empty"
 
-# Get source
-SETUP_SOURCE
+#=================================================
+# DOWNLOAD, CHECK AND UNPACK SOURCE
+#=================================================
+
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
+
+ynh_setup_source "$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
 
-# Copy Nginx configuration file
-sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
-# Modify Nginx configuration file
-sudo sed -i "s@__PATH__@$path@g" /etc/nginx/conf.d/$domain.d/$app.conf
-sudo sed -i "s@__PORT__@$port@g" /etc/nginx/conf.d/$domain.d/$app.conf
-
-if [ $is_public -eq 1 ];
-then
-	sudo sed -i "s@#--PRIVATE--@@g" /etc/nginx/conf.d/$domain.d/$app.conf
-fi
+# Create a dedicated nginx config
+ynh_add_nginx_config
 
 #=================================================
 # SPECIFIC UPGRADE
@@ -68,65 +77,78 @@ fi
 # SETUP LSTU
 #=================================================
 
-## Copie et configuration du fichier de conf.
-CHECK_MD5_CONFIG "lstu.conf" "$final_path/lstu.conf"	# Créé un backup du fichier de config si il a été modifié.
-sudo cp ../conf/lstu.conf.template "$final_path/lstu.conf"
-sudo sed -i "s@__DOMAIN__@$domain@g" "$final_path/lstu.conf"
-sudo sed -i "s@__PATH__@$path@g" "$final_path/lstu.conf"
-sudo sed -i "s@__PORT__@$port@g" "$final_path/lstu.conf"
-sudo sed -i "s@__SECRET__@$secret@g" "${final_path}/lstu.conf"
-STORE_MD5_CONFIG "lstu.conf" "$final_path/lstu.conf"	# Réenregistre la somme de contrôle du fichier de config
+ynh_backup_if_checksum_is_different "$final_path/lstu.conf"
+cp ../conf/lstu.conf.template "${final_path}/lstu.conf"
+ynh_replace_string "__DOMAIN__" "$domain" "${final_path}/lstu.conf"
+ynh_replace_string "__PATH__" "$path_url" "${final_path}/lstu.conf"
+ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
+ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
+ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
+ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
 
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-
-# Mise en place du script systemd
-sudo systemctl stop $app
-sudo cp ../conf/lstu.service /etc/systemd/system/$app.service
-sudo chown root: /etc/systemd/system/$app.service
-sudo sed -i "s@__FINALPATH__@$final_path/@g" /etc/systemd/system/$app.service
-##
-sudo systemctl daemon-reload
-## Démarrage auto du service
-sudo systemctl enable $app
-
-#=================================================
-# UPDATE LSTU'S DEPENDENCIES WITH CARTON
-#=================================================
-
-pushd $final_path	# cd avec une stack pour revenir en arrière
-echo yes | sudo carton install 2>&1 | sudo tee -a "/var/log/$app/setup_carton.log"
-popd	# Revient au dossier courant avant pushd
+secret=$(ynh_string_random 24)
+ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
+ynh_store_file_checksum "${final_path}/lstu.conf"
 
 #=================================================
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-sudo chown -R www-data: $final_path
+chown -R www-data $final_path
+
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+
+# Create a dedicated systemd config
+ynh_add_systemd_config
+
+#=================================================
+# Install lstu's dependencies via carton
+#=================================================
+
+pushd $final_path
+carton install --deployment --without=sqlite --without=mysql
+popd
+
+#=================================================
+# SETUP LOGROTATE
+#=================================================
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate
+
+#=================================================
+# ADVERTISE SERVICE IN ADMIN PANEL
+#=================================================
+
+yunohost service add $app --log "/var/log/$app.log"
 
 #=================================================
 # RESTART LSTU
 #=================================================
 
-sudo systemctl start lstu.service
+systemctl reload lstu
 
 #=================================================
 # SETUP SSOWAT
 #=================================================
 
+# Make app public or private
 ynh_app_setting_set $app skipped_uris "/"
 if [ $is_public -eq 0 ];
 then	# If the app is private, only the shortened URLs are publics
-	if [ "$path" == "/" ]; then
-		path=""
+	if [ "$path_url" == "/" ]; then
+		path_url=""
 	fi
-	ynh_app_setting_set $app protected_regex "$domain_regex$path/login$","$domain_regex$path/logout$","$domain_regex$path/api$","$domain_regex$path/extensions$","$domain_regex$path/stats$","$domain_regex$path/d/.*$","$domain_regex$path/a$","$domain_regex$path/$"
+	ynh_app_setting_set $app protected_regex "$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
+else
+	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
 
-sudo systemctl reload nginx
-sudo yunohost app ssowatconf
+systemctl reload nginx
+yunohost app ssowatconf
