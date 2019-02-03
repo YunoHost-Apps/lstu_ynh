@@ -72,3 +72,4 @@ sudo yunohost app upgrade lstu -u https://github.com/YunoHost-Apps/lstu_ynh/tree
 - [ ] Allow to choose the database (sqlite or PostgreSQL)
 - [ ] Allow to choose to use Minion
 - [ ] Add CI stuff
+- [ ] Theme choice (default or milligram)
