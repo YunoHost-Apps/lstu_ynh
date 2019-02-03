@@ -53,6 +53,12 @@ then	# Si final_path n'est pas renseigné dans la config yunohost, cas d'ancien 
 	final_path=/var/www/$app
 fi
 
+if [ -z "$db_pwd" ]; then
+	db_pwd=$(ynh_app_setting_get $app db_pwd)	# Fix old db_pwd
+	ynh_app_setting_delete $app db_pwd
+	ynh_app_setting_set $app psqlpwd $db_pwd
+fi
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
