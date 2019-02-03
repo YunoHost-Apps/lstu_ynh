@@ -124,6 +124,7 @@ ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
 
 secret=$(ynh_string_random 24)
+ynh_app_setting_set $app secret $secret
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
 ynh_store_file_checksum "${final_path}/lstu.conf"
 
