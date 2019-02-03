@@ -66,8 +66,9 @@ ynh_restore_file "$final_path"
 #=================================================
 
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
+ynh_psql_test_if_first_run
 ynh_psql_setup_db $db_name $db_name $db_pwd
-ynh_psql_connect_as $db_name $db_pwd < ./db.sql
+ynh_psql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
 #=================================================
 # SPECIFIC RESTORATION
