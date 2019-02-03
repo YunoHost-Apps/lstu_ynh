@@ -30,16 +30,6 @@ db_user=$db_name
 ynh_remove_systemd_config
 
 #=================================================
-# REMOVE SERVICE FROM ADMIN PANEL
-#=================================================
-
-if yunohost service status | grep -q $app
-then
-	echo "Remove $app service"
-	yunohost service remove $app
-fi
-
-#=================================================
 # REMOVE APP MAIN DIR
 #=================================================
 
@@ -57,7 +47,7 @@ ynh_remove_nginx_config
 # Delete Log
 #=================================================
 
-ynh_secure_remove "/var/log/$app/"
+ynh_secure_remove "/var/log/$app.log"
 
 #=================================================
 # REMOVE LOGROTATE CONFIGURATION
