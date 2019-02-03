@@ -43,6 +43,13 @@ test ! -d $final_path \
 #=================================================
 # STANDARD RESTORATION STEPS
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+
+# Define and install dependencies
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
+
+#=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
 
@@ -64,13 +71,6 @@ ynh_psql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
 #=================================================
 # SPECIFIC RESTORATION
-#=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-
-# Define and install dependencies
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
-
 #=================================================
 # RESTORE SYSTEMD
 #=================================================
