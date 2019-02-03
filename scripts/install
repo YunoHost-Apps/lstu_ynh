@@ -101,8 +101,6 @@ ynh_setup_source "$final_path"
 # NGINX CONFIGURATION
 #=================================================
 
-### `ynh_add_nginx_config` will use the file conf/nginx.conf
-
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
