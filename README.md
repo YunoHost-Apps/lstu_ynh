@@ -14,7 +14,7 @@ Lstu means Let's Shorten That Url.
 
 ## Screenshots
 
-![](https://framacloud.org/fr/cultiver-son-jardin/images/lstu/lstu-web.jpg)
+![](https://framalibre.org/sites/default/files/Screenshot_20161213_120016_1.png)
 
 ## Demo
 
