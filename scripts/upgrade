@@ -53,9 +53,6 @@ then	# Si final_path n'est pas renseigné dans la config yunohost, cas d'ancien 
 	final_path=/var/www/$app
 fi
 
-domain_regex=$(echo "$domain" | sed 's@-@.@g')
-CHECK_VAR "$domain_regex" "domain_regex empty"
-
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -128,7 +125,7 @@ yunohost service add $app --log "/var/log/$app.log"
 # RESTART LSTU
 #=================================================
 
-systemctl reload lstu
+systemctl reload $app
 
 #=================================================
 # SETUP SSOWAT
@@ -141,7 +138,7 @@ then	# If the app is private, only the shortened URLs are publics
 	if [ "$path_url" == "/" ]; then
 		path_url=""
 	fi
-	ynh_app_setting_set $app protected_regex "$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
+	ynh_app_setting_set $app protected_regex "$domain$path_url/login$","$domain$path_url/logout$","$domain$path_url/api$","$domain$path_url/extensions$","$domain$path_url/stats$","$domain$path_url/d/.*$","$domain$path_url/a$","$domain$path_url/$"
 else
 	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
 fi
