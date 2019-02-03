@@ -2,9 +2,9 @@
 	"name": "Lstu",
 	"id": "lstu",
 	"packaging_format": 1,
-	"version": "0.21-4~ynh1",
+	"version": "0.21-4~ynh2",
 	"requirements": {
-		"yunohost": ">= 2.4"
+		"yunohost": ">= 3.0"
 	},
 	"description": {
 		"en": "URL Shortener",
