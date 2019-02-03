@@ -183,8 +183,8 @@ sudo chown -R www-data $final_path
 # Start lstu
 #=================================================
 
-systemctl enable lstu.service
-systemctl start lstu
+systemctl enable $app.service
+systemctl start $app
 
 #=================================================
 # RELOAD NGINX
