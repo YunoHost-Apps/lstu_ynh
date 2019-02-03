@@ -139,7 +139,7 @@ yunohost service add $app --log "/var/log/$app.log"
 # RESTART LSTU
 #=================================================
 
-systemctl reload $app
+ynh_systemd_action -n $app -a reload -l "Starting hot deployment for Hypnotoad server" -p "systemd"
 
 #=================================================
 # SETUP SSOWAT

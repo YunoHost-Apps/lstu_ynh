@@ -77,7 +77,7 @@ ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev li
 
 ynh_restore_file "/etc/systemd/system/$app.service"
 systemctl enable $app.service
-systemctl start $app
+ynh_systemd_action -n $app -a start -l "Server available at" -p "systemd"
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL

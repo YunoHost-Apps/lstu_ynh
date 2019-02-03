@@ -183,11 +183,11 @@ sudo chown -R www-data $final_path
 #=================================================
 
 systemctl enable $app.service
-systemctl start $app
+ynh_systemd_action -n $app -a start -l "Server available at" -p "systemd"
 
 #=================================================
 # RELOAD NGINX
 #=================================================
 
 # Reload Nginx
-sudo service nginx reload
+systemctl reload nginx
