@@ -2,6 +2,7 @@
 	"name": "Lstu",
 	"id": "lstu",
 	"packaging_format": 1,
+	"version": "0.21-4~ynh1",
 	"requirements": {
 		"yunohost": ">= 2.4"
 	},
@@ -12,8 +13,8 @@
 	"url": "https://lstu.fr",
 	"license": "WTFPL",
 	"maintainer": {
-		"name": "frj365",
-		"email": "win10@tutanota.com"
+		"name": "frju365",
+		"email": "abld@abld.info"
 	},
 	"multi_instance": false,
 	"services": [
