@@ -43,6 +43,13 @@ test ! -d $final_path \
 #=================================================
 # STANDARD RESTORATION STEPS
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+
+# Define and install dependencies
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
+
+#=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
 
@@ -59,25 +66,19 @@ ynh_restore_file "$final_path"
 #=================================================
 
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
+ynh_psql_test_if_first_run
 ynh_psql_setup_db $db_name $db_name $db_pwd
 ynh_psql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
 #=================================================
 # SPECIFIC RESTORATION
 #=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-
-# Define and install dependencies
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
-
-#=================================================
 # RESTORE SYSTEMD
 #=================================================
 
 ynh_restore_file "/etc/systemd/system/$app.service"
 systemctl enable $app.service
-systemctl start $app
+ynh_systemd_action -n $app -a start -l "Server available at" -p "systemd"
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
