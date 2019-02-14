@@ -39,8 +39,6 @@ app=$YNH_APP_INSTANCE_NAME
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
-domain_regex=$(echo "$domain" | sed 's@-@.@g')
-
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
@@ -48,7 +46,6 @@ path_url=$(ynh_normalize_url_path $path_url)
 ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
-CHECK_VAR "$domain_regex" "domain_regex empty"
 
 #=================================================
 # FIND AND OPEN A PORT
@@ -154,7 +151,7 @@ ynh_use_logrotate
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app.log"
+yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/production.log"
 
 #=================================================
 # SETUP SSOWAT
@@ -167,7 +164,7 @@ then	# If the app is private, only the shortened URLs are publics
 	if [ "$path_url" == "/" ]; then
 		path_url=""
 	fi
-	ynh_app_setting_set $app protected_regex "$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
+	ynh_app_setting_set $app protected_regex "$domain$path_url/login$","$domain$path_url/logout$","$domain$path_url/api$","$domain$path_url/extensions$","$domain$path_url/stats$","$domain$path_url/d/.*$","$domain$path_url/a$","$domain$path_url/$"
 else
 	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
 fi
