@@ -26,10 +26,8 @@
 	Level 1=auto
 	Level 2=auto
 	Level 3=auto
-	Level 4=na
-# level 4: https://github.com/YunoHost-Apps/lstu_ynh/issues/4
-	Level 5=1
-# level 5: https://github.com/YunoHost-Apps/lstu_ynh/issues/3
+	Level 4=1
+	Level 5=auto
 	Level 6=auto
 	Level 7=auto
 	Level 8=0
