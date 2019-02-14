@@ -21,7 +21,7 @@
 		"nginx"
 	],
 	"arguments": {
-		"install" : [
+		"install": [
 			{
 				"name": "domain",
 				"type": "domain",
@@ -57,10 +57,13 @@
 					"en": "Choose a theme",
 					"fr": "Choisissez un theme"
 				},
-				"choices": ["default","milligram"],
+				"choices": [
+					"default",
+					"milligram"
+				],
 				"default": "milligram"
-      },
-      {
+			},
+			{
 				"name": "password",
 				"type": "password",
 				"ask": {
