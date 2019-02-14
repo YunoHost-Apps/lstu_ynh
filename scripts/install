@@ -74,7 +74,7 @@ ynh_app_setting_set $app path $path_url
 
 ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
 # Install Carton
-echo yes | sudo cpan Carton
+echo yes | cpan Carton
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -176,7 +176,7 @@ fi
 # Configure owner
 #=================================================
 
-sudo chown -R www-data $final_path
+chown -R www-data $final_path
 
 #=================================================
 # Start lstu
