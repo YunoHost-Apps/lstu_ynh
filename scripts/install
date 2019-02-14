@@ -28,6 +28,7 @@ domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
 theme=$YNH_APP_ARG_THEME
+password=$YNH_APP_ARG_PASSWORD
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -40,8 +41,6 @@ app=$YNH_APP_INSTANCE_NAME
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die "This path already contains a folder"
 
-domain_regex=$(echo "$domain" | sed 's@-@.@g')
-
 # Normalize the url path syntax
 path_url=$(ynh_normalize_url_path $path_url)
 
@@ -49,7 +48,6 @@ path_url=$(ynh_normalize_url_path $path_url)
 ynh_webpath_available $domain $path_url
 # Register (book) web path
 ynh_webpath_register $app $domain $path_url
-CHECK_VAR "$domain_regex" "domain_regex empty"
 
 #=================================================
 # FIND AND OPEN A PORT
@@ -69,6 +67,8 @@ ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app port $port
 ynh_app_setting_set $app path $path_url
 ynh_app_setting_set $app theme $theme
+hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
+ynh_app_setting_set $app hashed_password $hashed_password
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -76,7 +76,7 @@ ynh_app_setting_set $app theme $theme
 
 ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
 # Install Carton
-echo yes | sudo cpan Carton
+echo yes | cpan Carton
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
@@ -125,6 +125,7 @@ ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
 ynh_replace_string "__SELECTED_THEME__" "$theme" "${final_path}/lstu.conf"
+ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
 
 secret=$(ynh_string_random 24)
 ynh_app_setting_set $app secret $secret
@@ -157,7 +158,7 @@ ynh_use_logrotate
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app.log"
+yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/production.log"
 
 #=================================================
 # SETUP SSOWAT
@@ -170,7 +171,7 @@ then	# If the app is private, only the shortened URLs are publics
 	if [ "$path_url" == "/" ]; then
 		path_url=""
 	fi
-	ynh_app_setting_set $app protected_regex "$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
+	ynh_app_setting_set $app protected_regex "$domain$path_url/login$","$domain$path_url/logout$","$domain$path_url/api$","$domain$path_url/extensions$","$domain$path_url/stats$","$domain$path_url/d/.*$","$domain$path_url/a$","$domain$path_url/$"
 else
 	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
 fi
@@ -179,7 +180,7 @@ fi
 # Configure owner
 #=================================================
 
-sudo chown -R www-data $final_path
+chown -R www-data $final_path
 
 #=================================================
 # Start lstu

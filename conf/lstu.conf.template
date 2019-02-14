@@ -29,7 +29,7 @@
     # secret hashed passphrase to access some admin features
     # Hash your password by issuing `echo -n s3cr3T | sha256sum` on your terminal
     # optional, but you won't have access to admin /stats if not set and if adminpwd is not set either
-    #hashed_adminpwd => '94b2feede6ea5e2eec62f457ecb7d3f719b24d19c29d4e5466246a31908fc23b',
+    hashed_adminpwd => '__PASSWORD_HASHED__',
 
     # choose a theme. See the available themes in `themes` directory
     # optional, default is 'default'

@@ -36,6 +36,7 @@ db_name=$(ynh_app_setting_get $app db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
 theme=$(ynh_app_setting_get $app theme)
+hashed_password=$(ynh_app_setting_get $app hashed_password)
 
 #=================================================
 # FIX OLD THINGS
@@ -74,6 +75,19 @@ if [ -z "$theme" ]; then
 	ynh_app_setting_set $app theme $theme
 fi
 
+if [ -z "$hashed_password" ]; then
+	# Generate random password
+	password=$(openssl rand -hex 8)
+	hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
+
+	echo "The new version of LSTU provide an admin and a stats area which required a password.
+
+This password is: $password" > mail_to_send
+
+	ynh_send_readme_to_admin --app_message="mail_to_send" --type="upgrade"
+	
+	ynh_app_setting_set $app hashed_password $hashed_password
+fi
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -105,6 +119,7 @@ ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
 ynh_replace_string "__SELECTED_THEME__" "$theme" "${final_path}/lstu.conf"
+ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
 
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
 ynh_store_file_checksum "${final_path}/lstu.conf"
@@ -147,7 +162,7 @@ yunohost service add $app --log "/var/log/$app.log"
 # RESTART LSTU
 #=================================================
 
-ynh_systemd_action -n $app -a reload -l "Starting hot deployment for Hypnotoad server" -p "systemd"
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
 
 #=================================================
 # SETUP SSOWAT

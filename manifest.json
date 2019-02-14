@@ -16,7 +16,7 @@
 		"name": "frju365",
 		"email": "abld@abld.info"
 	},
-	"multi_instance": false,
+	"multi_instance": true,
 	"services": [
 		"nginx"
 	],
@@ -59,6 +59,14 @@
 				},
 				"choices": ["default","milligram"],
 				"default": "milligram"
+      },
+      {
+				"name": "password",
+				"type": "password",
+				"ask": {
+					"en": "Choose a password",
+					"fr": "Choisissez un mot de passe"
+				}
 			}
 		]
 	}
