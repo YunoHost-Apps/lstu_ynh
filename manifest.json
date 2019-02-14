@@ -16,7 +16,7 @@
 		"name": "frju365",
 		"email": "abld@abld.info"
 	},
-	"multi_instance": false,
+	"multi_instance": true,
 	"services": [
 		"nginx"
 	],
