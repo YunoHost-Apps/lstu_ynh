@@ -67,9 +67,6 @@ sudo yunohost app upgrade lstu -u https://github.com/YunoHost-Apps/lstu_ynh/tree
 ```
 ## Todo
 
-- [ ] Integrate with LDAP
-- [ ] Add a question for the admin features' password
 - [ ] Allow to choose the database (sqlite or PostgreSQL)
 - [ ] Allow to choose to use Minion
 - [ ] Add CI stuff
-- [ ] Theme choice (default or milligram)
