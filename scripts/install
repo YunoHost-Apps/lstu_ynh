@@ -68,7 +68,7 @@ ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app port $port
 ynh_app_setting_set $app path $path_url
-hashed_password=$(echo $password | sha256sum $password)
+hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 ynh_app_setting_set $app hashed_password $hashed_password
 
 #=================================================

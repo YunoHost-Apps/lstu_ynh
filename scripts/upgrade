@@ -71,15 +71,16 @@ fi
 
 if [ -z "$hashed_password" ]; then
 	# Generate random password
-	password=$(openssl rand -hex 15)
-	hashed_password=$(echo $password | sha256sum $password)
-	ynh_app_setting_set $app hashed_password $hashed_password
+	password=$(openssl rand -hex 8)
+	hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 
 	echo "The new version of LSTU provide an admin and a stats area which required a password.
 
-	This password is: $password" > mail_to_send
+This password is: $password" > mail_to_send
 
-	ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="admin" --type="upgrade"
+	ynh_send_readme_to_admin --app_message="mail_to_send" --type="upgrade"
+	
+	ynh_app_setting_set $app hashed_password $hashed_password
 fi
 
 #=================================================
@@ -154,7 +155,7 @@ yunohost service add $app --log "/var/log/$app.log"
 # RESTART LSTU
 #=================================================
 
-ynh_systemd_action -n $app -a reload -l "Starting hot deployment for Hypnotoad server" -p "systemd"
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
 
 #=================================================
 # SETUP SSOWAT
