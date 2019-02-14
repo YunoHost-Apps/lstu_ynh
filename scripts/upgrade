@@ -35,6 +35,7 @@ secret=$(ynh_app_setting_get $app secret)
 db_name=$(ynh_app_setting_get $app db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
+theme=$(ynh_app_setting_get $app theme)
 hashed_password=$(ynh_app_setting_get $app hashed_password)
 
 #=================================================
@@ -67,6 +68,11 @@ if [ -z "$db_pwd" ]; then
 		ynh_app_setting_delete $app db_pwd
 		ynh_app_setting_set $app psqlpwd $db_pwd
 	fi
+fi
+
+if [ -z "$theme" ]; then
+	theme="milligram"
+	ynh_app_setting_set $app theme $theme
 fi
 
 if [ -z "$hashed_password" ]; then
@@ -112,6 +118,7 @@ ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
 ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
+ynh_replace_string "__SELECTED_THEME__" "$theme" "${final_path}/lstu.conf"
 ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
 
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
