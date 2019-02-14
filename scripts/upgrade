@@ -35,6 +35,7 @@ secret=$(ynh_app_setting_get $app secret)
 db_name=$(ynh_app_setting_get $app db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
+hashed_password=$(ynh_app_setting_get $app hashed_password)
 
 #=================================================
 # FIX OLD THINGS
@@ -68,6 +69,19 @@ if [ -z "$db_pwd" ]; then
 	fi
 fi
 
+if [ -z "$hashed_password" ]; then
+	# Generate random password
+	password=$(openssl rand -hex 15)
+	hashed_password=$(echo $password | sha256sum $password)
+	ynh_app_setting_set $app hashed_password $hashed_password
+
+	echo "The new version of LSTU provide an admin and a stats area which required a password.
+
+	This password is: $password" > mail_to_send
+
+	ynh_send_readme_to_admin --app_message="mail_to_send" --recipients="admin" --type="upgrade"
+fi
+
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
@@ -97,6 +111,7 @@ ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
 ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
+ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
 
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
 ynh_store_file_checksum "${final_path}/lstu.conf"

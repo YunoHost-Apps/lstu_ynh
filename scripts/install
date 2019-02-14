@@ -27,6 +27,7 @@ ynh_abort_if_errors
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
+password=$YNH_APP_ARG_PASSWORD
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -67,6 +68,8 @@ ynh_app_setting_set $app domain $domain
 ynh_app_setting_set $app is_public $is_public
 ynh_app_setting_set $app port $port
 ynh_app_setting_set $app path $path_url
+hashed_password=$(echo $password | sha256sum $password)
+ynh_app_setting_set $app hashed_password $hashed_password
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -122,6 +125,7 @@ ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
 ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
+ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
 
 secret=$(ynh_string_random 24)
 ynh_app_setting_set $app secret $secret

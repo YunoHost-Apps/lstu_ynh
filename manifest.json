@@ -49,6 +49,14 @@
 					"fr": "Est-ce une application publique ?"
 				},
 				"default": false
+			},
+			{
+				"name": "password",
+				"type": "password",
+				"ask": {
+					"en": "Choose a password",
+					"fr": "Choisissez un mot de passe"
+				}
 			}
 		]
 	}
