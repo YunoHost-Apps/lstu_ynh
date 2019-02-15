@@ -84,7 +84,7 @@ ynh_systemd_action -n $app -a start -l "Server available at" -p "systemd"
 # ADVERTISE SERVICE IN ADMIN PANEL
 #=================================================
 
-yunohost service add $app --log "/var/log/$app.log"
+yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/production.log"
 
 #=================================================
 # RESTORE THE LOGROTATE CONFIGURATION
