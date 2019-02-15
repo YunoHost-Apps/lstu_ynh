@@ -1,0 +1,55 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+# Get is_public
+theme=${YNH_ACTION_THEME}
+
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
+final_path=$(ynh_app_setting_get $app final_path)
+
+#=================================================
+# CHECK IF AN ACTION HAS TO BE DONE
+#=================================================
+
+theme_old=$(ynh_app_setting_get $app theme)
+
+if [ "$theme" == "$theme_old" ]
+then
+	ynh_die "Same theme." 0
+fi
+
+#=================================================
+# SPECIFIC ACTION
+#=================================================
+# MOVE TO PUBLIC OR PRIVATE
+#=================================================
+
+ynh_backup_if_checksum_is_different "$final_path/lstu.conf"
+ynh_replace_string "$theme_old" "$theme" "${final_path}/lstu.conf"
+ynh_store_file_checksum "${final_path}/lstu.conf"
+
+# Update the config of the app
+ynh_app_setting_set $app theme $theme
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
