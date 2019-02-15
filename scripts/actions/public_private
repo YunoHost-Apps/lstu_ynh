@@ -1,0 +1,94 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+ynh_script_progression --message="Retrieve arguments from the manifest"
+
+# Get is_public
+is_public=${YNH_ACTION_IS_PUBLIC}
+
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
+final_path=$(ynh_app_setting_get $app final_path)
+
+#=================================================
+# CHECK IF ARGUMENTS ARE CORRECT
+#=================================================
+
+#=================================================
+# CHECK IF AN ACTION HAS TO BE DONE
+#=================================================
+
+is_public_old=$(ynh_app_setting_get $app is_public)
+
+if [ $is_public -eq $is_public_old ]
+then
+	ynh_die "is_public is already set as $is_public." 0
+fi
+
+#=================================================
+# SPECIFIC ACTION
+#=================================================
+# MOVE TO PUBLIC OR PRIVATE
+#=================================================
+if [ $is_public -eq 0 ]; then
+	public_private="private"
+else
+	public_private="public"
+fi
+ynh_script_progression --message="Move the application to $public_private" --weight=3
+
+ynh_app_setting_set $app skipped_uris "/"
+if [ $is_public -eq 0 ];
+then	# If the app is private, only the shortened URLs are publics
+	if [ "$path_url" == "/" ]; then
+		path_url=""
+	fi
+	ynh_app_setting_set $app protected_regex "$domain$path_url/login$","$domain$path_url/logout$","$domain$path_url/api$","$domain$path_url/extensions$","$domain$path_url/stats$","$domain$path_url/d/.*$","$domain$path_url/a$","$domain$path_url/$"
+
+	ynh_replace_string "#ldap => {" 									"ldap => {" "${final_path}/lstu.conf"
+	ynh_replace_string "#uri         => 'ldap://localhost:389'," 		"uri         => 'ldap://localhost:389'," "${final_path}/lstu.conf"
+	ynh_replace_string "#user_tree   => 'dc=yunohost,dc=org'," 			"user_tree   => 'dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "#bind_dn     => 'ou=users,dc=yunohost,dc=org'," "bind_dn     => 'ou=users,dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "#user_attr   => 'uid'," 						"user_attr   => 'uid'," "${final_path}/lstu.conf"
+	ynh_replace_string "#}, #end of ldap conf" 							"}, #end of ldap conf" "${final_path}/lstu.conf"
+else
+	ynh_app_setting_delete $app protected_regex
+
+	ynh_replace_string "ldap => {"										"#ldap => {" "${final_path}/lstu.conf"
+	ynh_replace_string "uri         => 'ldap://localhost:389',"			"#uri         => 'ldap://localhost:389'," "${final_path}/lstu.conf"
+	ynh_replace_string "user_tree   => 'dc=yunohost,dc=org',"			"#user_tree   => 'dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "bind_dn     => 'ou=users,dc=yunohost,dc=org',"	"#bind_dn     => 'ou=users,dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "user_attr   => 'uid',"							"#user_attr   => 'uid'," "${final_path}/lstu.conf"
+	ynh_replace_string "}, #end of ldap conf"							"#}, #end of ldap conf" "${final_path}/lstu.conf"
+fi
+
+ynh_script_progression --message="Reconfigure SSOwat"
+# Regen ssowat configuration
+yunohost app ssowatconf
+
+# Update the config of the app
+ynh_app_setting_set $app is_public $is_public
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+ynh_script_progression --message="Reload $app"
+
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_script_progression --message="Execution completed" --last

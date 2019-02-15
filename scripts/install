@@ -172,8 +172,22 @@ then	# If the app is private, only the shortened URLs are publics
 		path_url=""
 	fi
 	ynh_app_setting_set $app protected_regex "$domain$path_url/login$","$domain$path_url/logout$","$domain$path_url/api$","$domain$path_url/extensions$","$domain$path_url/stats$","$domain$path_url/d/.*$","$domain$path_url/a$","$domain$path_url/$"
+
+	ynh_replace_string "#ldap => {" 									"ldap => {" "${final_path}/lstu.conf"
+	ynh_replace_string "#uri         => 'ldap://localhost:389'," 		"uri         => 'ldap://localhost:389'," "${final_path}/lstu.conf"
+	ynh_replace_string "#user_tree   => 'dc=yunohost,dc=org'," 			"user_tree   => 'dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "#bind_dn     => 'ou=users,dc=yunohost,dc=org'," "bind_dn     => 'ou=users,dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "#user_attr   => 'uid'," 						"user_attr   => 'uid'," "${final_path}/lstu.conf"
+	ynh_replace_string "#}, #end of ldap conf" 							"}, #end of ldap conf" "${final_path}/lstu.conf"
 else
-	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
+	ynh_app_setting_delete $app protected_regex
+
+	ynh_replace_string "ldap => {"										"#ldap => {" "${final_path}/lstu.conf"
+	ynh_replace_string "uri         => 'ldap://localhost:389',"			"#uri         => 'ldap://localhost:389'," "${final_path}/lstu.conf"
+	ynh_replace_string "user_tree   => 'dc=yunohost,dc=org',"			"#user_tree   => 'dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "bind_dn     => 'ou=users,dc=yunohost,dc=org',"	"#bind_dn     => 'ou=users,dc=yunohost,dc=org'," "${final_path}/lstu.conf"
+	ynh_replace_string "user_attr   => 'uid',"							"#user_attr   => 'uid'," "${final_path}/lstu.conf"
+	ynh_replace_string "}, #end of ldap conf"							"#}, #end of ldap conf" "${final_path}/lstu.conf"
 fi
 
 #=================================================

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+set_config_file() {
+	
+}
+
 # Start (or other actions) a service,  print a log in case of failure and optionnaly wait until the service is completely started
 #
 # usage: ynh_systemd_action [-n service_name] [-a action] [ [-l "line to match"] [-p log_path] [-t timeout] [-e length] ]

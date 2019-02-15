@@ -185,7 +185,7 @@
     #   bind_pwd    => '',                              # search bind password
         user_attr   => 'uid',                           # user attribute (uid, mail, sAMAccountName, etc.)
     #    user_filter => '(!(uid=ldap_user))',           # user filter (to exclude some users, etc.)
-    },
+    }, #end of ldap conf
 
     # set `htpasswd` if you want to use an htpasswd file instead of ldap
     # create the file with `htpasswd -c lstu.passwd user`, update it with `htpasswd lstu.passwd user2`
