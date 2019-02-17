@@ -32,7 +32,7 @@ How to configure this app: a plain file with SSH.
 
 #### Multi-users support
 
-Are LDAP and HTTP auth supported? **Not yet**  
+Are LDAP and HTTP auth supported? **Yes**  
 Can the app be used by multiple users? **Yes**
 
 #### Supported architectures
