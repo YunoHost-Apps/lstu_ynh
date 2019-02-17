@@ -30,10 +30,13 @@ final_path=$(ynh_app_setting_get $app final_path)
 
 # Needed for lstu conf
 port=$(ynh_app_setting_get $app port)
+is_public=$(ynh_app_setting_get $app is_public)
 db_name=$(ynh_app_setting_get "$app" db_name)
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
 db_user=$db_name
 secret=$(ynh_app_setting_get $app secret)
+theme=$(ynh_app_setting_get $app theme)
+hashed_password=$(ynh_app_setting_get $app hashed_password)
 
 #=================================================
 # CHECK THE SYNTAX OF THE PATHS
@@ -107,8 +110,16 @@ ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
 ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
+ynh_replace_string "__SELECTED_THEME__" "$theme" "${final_path}/lstu.conf"
+ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
 
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
+if [ $is_public -eq 0 ];
+then
+	ynh_replace_string "__IS_PUBLIC__" "" "${final_path}/lstu.conf"
+else
+	ynh_replace_string "__IS_PUBLIC__" "#" "${final_path}/lstu.conf"
+fi
 ynh_store_file_checksum "${final_path}/lstu.conf"
 
 #=================================================
