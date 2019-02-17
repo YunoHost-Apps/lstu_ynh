@@ -130,6 +130,12 @@ ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.
 secret=$(ynh_string_random 24)
 ynh_app_setting_set $app secret $secret
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
+if [ $is_public -eq 0 ];
+then
+	ynh_replace_string "__IS_PUBLIC__" "" "${final_path}/lstu.conf"
+else
+	ynh_replace_string "__IS_PUBLIC__" "#" "${final_path}/lstu.conf"
+fi
 ynh_store_file_checksum "${final_path}/lstu.conf"
 
 #=================================================
@@ -165,15 +171,12 @@ yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/pro
 #=================================================
 
 # Make app public or private
-ynh_app_setting_set $app skipped_uris "/"
+ynh_app_setting_set $app unprotected_uris "/"
 if [ $is_public -eq 0 ];
 then	# If the app is private, only the shortened URLs are publics
-	if [ "$path_url" == "/" ]; then
-		path_url=""
-	fi
-	ynh_app_setting_set $app protected_regex "$domain$path_url/login$","$domain$path_url/logout$","$domain$path_url/api$","$domain$path_url/extensions$","$domain$path_url/stats$","$domain$path_url/d/.*$","$domain$path_url/a$","$domain$path_url/$"
+	ynh_app_setting_set $app protected_regex "/login$","/logout$","/api$","/extensions$","/stats$","/d/.*$","/a$","/$"
 else
-	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
+	ynh_app_setting_delete $app protected_regex
 fi
 
 #=================================================
@@ -195,3 +198,4 @@ ynh_systemd_action -n $app -a start -l "Server available at" -p "systemd"
 
 # Reload Nginx
 systemctl reload nginx
+yunohost app ssowatconf
