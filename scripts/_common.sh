@@ -33,22 +33,22 @@ ynh_systemd_action() {
     if [[ -n "${line_match:-}" ]]
     then
         local templog="$(mktemp)"
-	# Following the starting of the app in its log
-	if [ "$log_path" == "systemd" ] ; then
+        # Following the starting of the app in its log
+        if [ "$log_path" == "systemd" ] ; then
             # Read the systemd journal
-            journalctl -u $service_name -f --since=-45 > "$templog" &
-	else
+            journalctl --unit=$service_name --follow --since=-0 --quiet > "$templog" &
+        else
             # Read the specified log file
             tail -F -n0 "$log_path" > "$templog" &
-	fi
+        fi
         # Get the PID of the tail command
         local pid_tail=$!
     fi
 
     echo "${action^} the service $service_name" >&2
     systemctl $action $service_name \
-        || ( journalctl --lines=$length -u $service_name >&2 \
-        ; test -n "$log_path" && echo "--" && tail --lines=$length "$log_path" >&2 \
+        || ( journalctl --lines=$length -u $service_name --no-pager >&2 \
+        ; test -e "$log_path" && echo "--" && tail --lines=$length "$log_path" >&2 \
         ; false )
 
     # Start the timeout and try to find line_match
@@ -70,8 +70,8 @@ ynh_systemd_action() {
         then
             echo "The service $service_name didn't fully started before the timeout." >&2
             echo "Please find here an extract of the end of the log of the service $service_name:"
-            journalctl --lines=$length -u $service_name >&2
-            test -n "$log_path" && echo "--" && tail --lines=$length "$log_path" >&2
+            journalctl --lines=$length -u $service_name --no-pager >&2
+            test -e "$log_path" && echo "--" && tail --lines=$length "$log_path" >&2
         fi
 
         echo ""
