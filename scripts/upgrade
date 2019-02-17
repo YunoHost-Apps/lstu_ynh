@@ -77,7 +77,7 @@ fi
 
 if [ -z "$hashed_password" ]; then
 	# Generate random password
-	password=$(openssl rand -hex 8)
+	password=$(ynh_string_random --length=8)
 	hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 
 	echo "The new version of LSTU provide an admin and a stats area which required a password.
