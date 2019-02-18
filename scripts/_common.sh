@@ -7,6 +7,9 @@
 # | arg: -a, --action=       - Action to perform with systemctl. Default: start
 # | arg: -l, --line_match=   - Line to match - The line to find in the log to attest the service have finished to boot.
 #                              If not defined it don't wait until the service is completely started.
+#                              WARNING: When using --line_match, you should always add `ynh_clean_check_starting` into your
+#                                `ynh_clean_setup` at the beginning of the script. Otherwise, tail will not stop in case of failure
+#                                of the script. The script will then hang forever.
 # | arg: -p, --log_path=     - Log file - Path to the log file. Default : /var/log/$app/$app.log
 # | arg: -t, --timeout=      - Timeout - The maximum time to wait before ending the watching. Default : 300 seconds.
 # | arg: -e, --length=       - Length of the error log : Default : 20
@@ -37,17 +40,19 @@ ynh_systemd_action() {
         if [ "$log_path" == "systemd" ] ; then
             # Read the systemd journal
             journalctl --unit=$service_name --follow --since=-0 --quiet > "$templog" &
+            # Get the PID of the journalctl command
+            local pid_tail=$!
         else
             # Read the specified log file
             tail -F -n0 "$log_path" > "$templog" &
+            # Get the PID of the tail command
+            local pid_tail=$!
         fi
-        # Get the PID of the tail command
-        local pid_tail=$!
     fi
 
     echo "${action^} the service $service_name" >&2
     systemctl $action $service_name \
-        || ( journalctl --lines=$length -u $service_name --no-pager >&2 \
+        || ( journalctl --no-pager --lines=$length -u $service_name >&2 \
         ; test -e "$log_path" && echo "--" && tail --lines=$length "$log_path" >&2 \
         ; false )
 
@@ -70,7 +75,7 @@ ynh_systemd_action() {
         then
             echo "The service $service_name didn't fully started before the timeout." >&2
             echo "Please find here an extract of the end of the log of the service $service_name:"
-            journalctl --lines=$length -u $service_name --no-pager >&2
+            journalctl --no-pager --lines=$length -u $service_name >&2
             test -e "$log_path" && echo "--" && tail --lines=$length "$log_path" >&2
         fi
 
