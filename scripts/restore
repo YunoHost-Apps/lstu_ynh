@@ -48,9 +48,9 @@ test ! -d $final_path \
 #=================================================
 
 # Define and install dependencies
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
 # Install Carton
-echo yes | cpan Carton
+echo yes | cpanm Carton
 
 #=================================================
 # RESTORE THE NGINX CONFIGURATION

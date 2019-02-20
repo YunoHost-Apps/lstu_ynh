@@ -94,7 +94,7 @@ fi
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
 
 ynh_setup_source "$final_path"
 

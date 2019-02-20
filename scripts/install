@@ -75,9 +75,9 @@ ynh_app_setting_set $app hashed_password $hashed_password
 # INSTALL DEPENDENCIES
 #=================================================
 
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
 # Install Carton
-echo yes | cpan Carton
+echo yes | cpanm Carton
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
