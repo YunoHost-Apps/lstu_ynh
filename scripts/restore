@@ -24,6 +24,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Loading settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -35,6 +36,7 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
+ynh_print_info "Validating restoration parameters..."
 
 ynh_webpath_available $domain $path_url \
 	|| ynh_die "Path not available: ${domain}${path_url}"
@@ -46,6 +48,7 @@ test ! -d $final_path \
 #=================================================
 # REINSTALL DEPENDENCIES
 #=================================================
+ynh_print_info "Reinstalling dependencies..."
 
 # Define and install dependencies
 ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
@@ -61,23 +64,42 @@ ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
+ynh_print_info "Restoring the app main directory..."
 
 ynh_restore_file "$final_path"
 
 #=================================================
-# RESTORE THE MYSQL DATABASE
+# RECREATE THE DEDICATED USER
 #=================================================
+ynh_print_info "Recreating the dedicated system user..."
+
+# Create the dedicated user (if not existing)
+ynh_system_user_create $app
+
+#=================================================
+# RESTORE THE POSTGRESQL DATABASE
+#=================================================
+ynh_print_info "Restoring the PostregSQL database..."
 
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
 ynh_psql_test_if_first_run
 ynh_psql_setup_db $db_name $db_name $db_pwd
 ynh_psql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
+
+#=================================================
+# RESTORE USER RIGHTS
+#=================================================
+
+# Restore permissions on app files
+chown -R www-data $final_path
+
 #=================================================
 # SPECIFIC RESTORATION
 #=================================================
 # RESTORE SYSTEMD
 #=================================================
+ynh_print_info "Restoring the systemd configuration..."
 
 ynh_restore_file "/etc/systemd/system/$app.service"
 systemctl enable $app.service
@@ -100,6 +122,13 @@ ynh_restore_file "/etc/logrotate.d/$app"
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
 yunohost app ssowatconf
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Restoration completed for $app"
