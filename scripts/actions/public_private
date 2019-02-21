@@ -1,0 +1,101 @@
+#!/bin/bash
+
+#=================================================
+# GENERIC STARTING
+#=================================================
+# IMPORT GENERIC HELPERS
+#=================================================
+
+source scripts/_common.sh
+source /usr/share/yunohost/helpers
+
+#=================================================
+# RETRIEVE ARGUMENTS
+#=================================================
+
+# Get is_public
+is_public=${YNH_ACTION_IS_PUBLIC}
+
+app=${YNH_APP_INSTANCE_NAME:-$YNH_APP_ID}
+
+domain=$(ynh_app_setting_get $app domain)
+path_url=$(ynh_app_setting_get $app path)
+port=$(ynh_app_setting_get $app port)
+final_path=$(ynh_app_setting_get $app final_path)
+secret=$(ynh_app_setting_get $app secret)
+db_name=$(ynh_app_setting_get $app db_name)
+db_user=$db_name
+db_pwd=$(ynh_app_setting_get $app psqlpwd)
+theme=$(ynh_app_setting_get $app theme)
+hashed_password=$(ynh_app_setting_get $app hashed_password)
+
+#=================================================
+# CHECK IF ARGUMENTS ARE CORRECT
+#=================================================
+
+#=================================================
+# CHECK IF AN ACTION HAS TO BE DONE
+#=================================================
+
+is_public_old=$(ynh_app_setting_get $app is_public)
+
+if [ $is_public -eq $is_public_old ]
+then
+	ynh_die "is_public is already set as $is_public." 0
+fi
+
+#=================================================
+# SPECIFIC ACTION
+#=================================================
+# MOVE TO PUBLIC OR PRIVATE
+#=================================================
+
+ynh_backup_if_checksum_is_different "$final_path/lstu.conf"
+cp conf/lstu.conf.template "${final_path}/lstu.conf"
+ynh_replace_string "__DOMAIN__" "$domain" "${final_path}/lstu.conf"
+ynh_replace_string "__PATH__" "$path_url" "${final_path}/lstu.conf"
+ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
+ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
+ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
+ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
+ynh_replace_string "__SELECTED_THEME__" "$theme" "${final_path}/lstu.conf"
+ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
+
+ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
+if [ $is_public -eq 0 ];
+then
+	ynh_replace_string "__IS_PUBLIC__" "" "${final_path}/lstu.conf"
+else
+	ynh_replace_string "__IS_PUBLIC__" "#" "${final_path}/lstu.conf"
+fi
+ynh_store_file_checksum "${final_path}/lstu.conf"
+
+if [ $is_public -eq 0 ]; then
+	public_private="private"
+else
+	public_private="public"
+fi
+
+ynh_app_setting_set $app unprotected_uris "/"
+if [ $is_public -eq 0 ];
+then	# If the app is private, only the shortened URLs are publics
+	ynh_app_setting_set $app protected_regex "/login$","/logout$","/api$","/extensions$","/stats$","/d/.*$","/a$","/$"
+else
+	ynh_app_setting_delete $app protected_regex
+fi
+
+# Regen ssowat configuration
+yunohost app ssowatconf
+
+# Update the config of the app
+ynh_app_setting_set $app is_public $is_public
+
+#=================================================
+# RELOAD NGINX
+#=================================================
+
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
+
+#=================================================
+# END OF SCRIPT
+#=================================================

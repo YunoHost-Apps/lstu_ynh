@@ -2,7 +2,7 @@
 	"name": "Lstu",
 	"id": "lstu",
 	"packaging_format": 1,
-	"version": "0.21-4~ynh2",
+	"version": "0.21-4~ynh3",
 	"requirements": {
 		"yunohost": ">= 3.0"
 	},
@@ -16,12 +16,12 @@
 		"name": "frju365",
 		"email": "abld@abld.info"
 	},
-	"multi_instance": false,
+	"multi_instance": true,
 	"services": [
 		"nginx"
 	],
 	"arguments": {
-		"install" : [
+		"install": [
 			{
 				"name": "domain",
 				"type": "domain",
@@ -49,6 +49,27 @@
 					"fr": "Est-ce une application publique ?"
 				},
 				"default": false
+			},
+			{
+				"name": "theme",
+				"type": "string",
+				"ask": {
+					"en": "Choose a theme",
+					"fr": "Choisissez un theme"
+				},
+				"choices": [
+					"default",
+					"milligram"
+				],
+				"default": "milligram"
+			},
+			{
+				"name": "password",
+				"type": "password",
+				"ask": {
+					"en": "Choose a password",
+					"fr": "Choisissez un mot de passe"
+				}
 			}
 		]
 	}

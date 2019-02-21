@@ -10,19 +10,9 @@ source _common.sh
 source /usr/share/yunohost/helpers
 
 #=================================================
-# MANAGE SCRIPT FAILURE
-#=================================================
-
-ynh_clean_setup () {
-	### Remove this function if there's nothing to clean before calling the remove script.
-	true
-}
-# Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
-
-#=================================================
 # LOAD SETTINGS
 #=================================================
+ynh_print_info "Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -35,10 +25,13 @@ secret=$(ynh_app_setting_get $app secret)
 db_name=$(ynh_app_setting_get $app db_name)
 db_user=$db_name
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
+theme=$(ynh_app_setting_get $app theme)
+hashed_password=$(ynh_app_setting_get $app hashed_password)
 
 #=================================================
 # FIX OLD THINGS
 #=================================================
+ynh_print_info "Ensuring downward compatibility..."
 
 if [ "$is_public" = "Yes" ]; then
 	ynh_app_setting_set $app is_public 1	# Fixe is_public en booléen
@@ -68,26 +61,73 @@ if [ -z "$db_pwd" ]; then
 	fi
 fi
 
+if [ -z "$theme" ]; then
+	theme="milligram"
+	ynh_app_setting_set $app theme $theme
+fi
+
+if [ -z "$hashed_password" ]; then
+	# Generate random password
+	password=$(ynh_string_random 8)
+	hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
+
+	echo "The new version of LSTU provide an admin and a stats area which required a password.
+
+This password is: $password" > mail_to_send
+
+	ynh_send_readme_to_admin --app_message="mail_to_send" --type="upgrade"
+	
+	ynh_app_setting_set $app hashed_password $hashed_password
+fi
+
+#=================================================
+# BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
+#=================================================
+ynh_print_info "Backing up the app before upgrading (may take a while)..."
+
+# Backup the current version of the app
+ynh_backup_before_upgrade
+ynh_clean_setup () {
+	ynh_clean_check_starting
+	# restore it if the upgrade fails
+	ynh_restore_upgradebackup
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
+# STANDARD UPGRADE STEPS
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
+ynh_print_info "Upgrading source files..."
 
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql
+ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
 
 ynh_setup_source "$final_path"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
+ynh_print_info "Upgrading nginx web server configuration..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_print_info "Making sure dedicated system user exists..."
+
+# Create a dedicated user (if not existing)
+ynh_system_user_create $app
 
 #=================================================
 # SPECIFIC UPGRADE
 #=================================================
 # SETUP LSTU
 #=================================================
+ynh_print_info "Upgrading lstu configuration..."
 
 ynh_backup_if_checksum_is_different "$final_path/lstu.conf"
 cp ../conf/lstu.conf.template "${final_path}/lstu.conf"
@@ -97,8 +137,16 @@ ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
 ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
 ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
+ynh_replace_string "__SELECTED_THEME__" "$theme" "${final_path}/lstu.conf"
+ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
 
 ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
+if [ $is_public -eq 0 ];
+then
+	ynh_replace_string "__IS_PUBLIC__" "" "${final_path}/lstu.conf"
+else
+	ynh_replace_string "__IS_PUBLIC__" "#" "${final_path}/lstu.conf"
+fi
 ynh_store_file_checksum "${final_path}/lstu.conf"
 
 #=================================================
@@ -110,6 +158,7 @@ chown -R www-data $final_path
 #=================================================
 # SETUP SYSTEMD
 #=================================================
+ynh_print_info "Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
@@ -125,9 +174,10 @@ popd
 #=================================================
 # SETUP LOGROTATE
 #=================================================
+ynh_print_info "Upgrading logrotate configuration..."
 
-# Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+# Use logrotate to manage app-specific logfile(s)
+ynh_use_logrotate --non-append
 
 #=================================================
 # ADVERTISE SERVICE IN ADMIN PANEL
@@ -139,27 +189,32 @@ yunohost service add $app --log "/var/log/$app.log"
 # RESTART LSTU
 #=================================================
 
-ynh_systemd_action -n $app -a reload -l "Starting hot deployment for Hypnotoad server" -p "systemd"
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
 
 #=================================================
 # SETUP SSOWAT
 #=================================================
+ynh_print_info "Upgrading SSOwat configuration..."
 
 # Make app public or private
-ynh_app_setting_set $app skipped_uris "/"
+ynh_app_setting_set $app unprotected_uris "/"
 if [ $is_public -eq 0 ];
 then	# If the app is private, only the shortened URLs are publics
-	if [ "$path_url" == "/" ]; then
-		path_url=""
-	fi
-	ynh_app_setting_set $app protected_regex "$domain$path_url/login$","$domain$path_url/logout$","$domain$path_url/api$","$domain$path_url/extensions$","$domain$path_url/stats$","$domain$path_url/d/.*$","$domain$path_url/a$","$domain$path_url/$"
+	ynh_app_setting_set $app protected_regex "/login$","/logout$","/api$","/extensions$","/stats$","/d/.*$","/a$","/$"
 else
-	ynh_replace_string "#--PRIVATE--" "" "/etc/nginx/conf.d/$domain.d/$app.conf"
+	ynh_app_setting_delete $app protected_regex
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
+ynh_print_info "Reloading nginx web server..."
 
 systemctl reload nginx
 yunohost app ssowatconf
+
+#=================================================
+# END OF SCRIPT
+#=================================================
+
+ynh_print_info "Upgrade of $app completed"
