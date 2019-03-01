@@ -71,9 +71,9 @@ if [ -z "$hashed_password" ]; then
 	password=$(ynh_string_random 8)
 	hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 
-	echo "The new version of LSTU provide an admin and a stats area which required a password.
-
-This password is: $password" > mail_to_send
+	echo "The new version of LSTU provide an admin and a stats area which required a password." > mail_to_send
+	echo "" >> mail_to_send
+	echo "This password is: $password" >> mail_to_send
 
 	ynh_send_readme_to_admin --app_message="mail_to_send" --type="upgrade"
 	
