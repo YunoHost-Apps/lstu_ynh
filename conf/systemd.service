@@ -6,7 +6,8 @@ After=network.target
 
 [Service]
 Type=simple
-User=www-data
+User=__APP__
+Group=__APP__
 RemainAfterExit=yes
 Restart=always
 RestartSec=10
