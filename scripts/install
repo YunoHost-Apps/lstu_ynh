@@ -182,20 +182,24 @@ yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/pro
 #=================================================
 ynh_print_info "Configuring SSOwat..."
 
-# Make app public or private
 ynh_app_setting_set $app unprotected_uris "/"
-if [ $is_public -eq 0 ];
-then	# If the app is private, only the shortened URLs are publics
-	ynh_app_setting_set $app protected_regex "/login$","/logout$","/api$","/extensions$","/stats$","/d/.*$","/a$","/$"
-else
-	ynh_app_setting_delete $app protected_regex
+if [ $is_public -eq 0 ]
+then
+	# If the app is private, only the shortened URLs are publics.
+	if [ "$path_url" == "/" ]; then
+	    # If the path is /, clear it to prevent any error with the regex.
+	    path_url=""
+	fi
+	# Modify the domain to be used in a regex
+	domain_regex=$(echo "$domain" | sed 's@-@.@g')
+	ynh_app_setting_set $app protected_regex "$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
 fi
 
 #=================================================
 # Configure owner
 #=================================================
 
-chown -R www-data $final_path
+chown -R $app:$app "$final_path"
 
 #=================================================
 # Start lstu

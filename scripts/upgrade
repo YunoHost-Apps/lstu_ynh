@@ -153,7 +153,7 @@ ynh_store_file_checksum "${final_path}/lstu.conf"
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-chown -R www-data $final_path
+chown -R $app:$app "$final_path"
 
 #=================================================
 # SETUP SYSTEMD
@@ -196,13 +196,17 @@ ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "s
 #=================================================
 ynh_print_info "Upgrading SSOwat configuration..."
 
-# Make app public or private
 ynh_app_setting_set $app unprotected_uris "/"
-if [ $is_public -eq 0 ];
-then	# If the app is private, only the shortened URLs are publics
-	ynh_app_setting_set $app protected_regex "/login$","/logout$","/api$","/extensions$","/stats$","/d/.*$","/a$","/$"
-else
-	ynh_app_setting_delete $app protected_regex
+if [ $is_public -eq 0 ]
+then
+	# If the app is private, only the shortened URLs are publics.
+	if [ "$path_url" == "/" ]; then
+	    # If the path is /, clear it to prevent any error with the regex.
+	    path_url=""
+	fi
+	# Modify the domain to be used in a regex
+	domain_regex=$(echo "$domain" | sed 's@-@.@g')
+	ynh_app_setting_set $app protected_regex "$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
 fi
 
 #=================================================
