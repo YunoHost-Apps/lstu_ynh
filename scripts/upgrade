@@ -153,7 +153,7 @@ ynh_store_file_checksum "${final_path}/lstu.conf"
 # SECURING FILES AND DIRECTORIES
 #=================================================
 
-chown -R $app:$app "$final_path"
+chown -R www-data $final_path
 
 #=================================================
 # SETUP SYSTEMD
@@ -189,7 +189,7 @@ yunohost service add $app --log "/var/log/$app.log"
 # RESTART LSTU
 #=================================================
 
-ynh_systemd_action -n $app -a reload-or-restart -l "Reloaded Shortened URLs service." -p "systemd"
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
 
 #=================================================
 # SETUP SSOWAT
