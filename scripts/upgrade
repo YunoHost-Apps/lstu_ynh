@@ -189,7 +189,7 @@ yunohost service add $app --log "/var/log/$app.log"
 # RESTART LSTU
 #=================================================
 
-ynh_systemd_action -n $app -a reload-or-restart -l "Reloaded Shortened URLs service." -p "systemd"
+ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
 
 #=================================================
 # SETUP SSOWAT
