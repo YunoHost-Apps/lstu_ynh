@@ -125,7 +125,7 @@ ynh_print_info --message="Configuring system user..."
 ynh_system_user_create --username=$app
 
 #=================================================
-## Copy and fix variable into lstu config
+# Copy and fix variable into lstu config
 #=================================================
 ynh_print_info --message="Configuring lstu..."
 
