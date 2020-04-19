@@ -39,7 +39,6 @@ Can the app be used by multiple users? **Yes**
 
 * x86-64b - [![Build Status](https://ci-apps.yunohost.org/ci/logs/lstu%20%28Community%29.svg)](https://ci-apps.yunohost.org/ci/apps/lstu/)
 * ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/lstu%20%28Community%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/lstu/)
-* Jessie x86-64b - [![Build Status](https://ci-stretch.nohost.me/ci/logs/lstu%20%28Community%29.svg)](https://ci-stretch.nohost.me/ci/apps/lstu/)
 
 
 **More information on the documentation page:**  

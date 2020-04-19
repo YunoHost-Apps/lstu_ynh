@@ -12,11 +12,10 @@ source /usr/share/yunohost/helpers
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
+ynh_print_info --message="Managing script failure..."
 
 ynh_clean_setup () {
 	ynh_clean_check_starting
-	
-	true
 }
 # Exit if an error occurs during the execution of the script
 ynh_abort_if_errors
@@ -24,71 +23,54 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info "Loading settings..."
+ynh_print_info --message="Loading settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get $app domain)
-path_url=$(ynh_app_setting_get $app path)
-final_path=$(ynh_app_setting_get $app final_path)
-db_name=$(ynh_app_setting_get $app db_name)
+domain=$(ynh_app_setting_get --app=$app --key=domain)
+path_url=$(ynh_app_setting_get --app=$app --key=path)
+final_path=$(ynh_app_setting_get --app=$app --key=final_path)
+db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+db_user=$db_name
 
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
-ynh_print_info "Validating restoration parameters..."
+ynh_print_info --message="Validating restoration parameters..."
 
-ynh_webpath_available $domain $path_url \
-	|| ynh_die "Path not available: ${domain}${path_url}"
+ynh_webpath_available --domain=$domain --path_url=$path_url \
+	|| ynh_die --message="Path not available: ${domain}${path_url}"
 test ! -d $final_path \
-	|| ynh_die "There is already a directory: $final_path "
+	|| ynh_die --message="There is already a directory: $final_path "
 
 #=================================================
 # STANDARD RESTORATION STEPS
 #=================================================
-# REINSTALL DEPENDENCIES
-#=================================================
-ynh_print_info "Reinstalling dependencies..."
-
-# Define and install dependencies
-ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
-# Install Carton
-echo yes | cpanm Carton
-
-#=================================================
 # RESTORE THE NGINX CONFIGURATION
 #=================================================
+ynh_print_info --message="Restoring the nginx configuration..."
 
-ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
+ynh_restore_file --origin_path="/etc/nginx/conf.d/$domain.d/$app.conf"
 
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
-ynh_print_info "Restoring the app main directory..."
+ynh_print_info --message="Restoring the app main directory..."
 
-ynh_restore_file "$final_path"
+ynh_restore_file --origin_path="$final_path"
 
 #=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
-ynh_print_info "Recreating the dedicated system user..."
+ynh_print_info --message="Recreating the dedicated system user..."
 
 # Create the dedicated user (if not existing)
-ynh_system_user_create $app
-
-#=================================================
-# RESTORE THE POSTGRESQL DATABASE
-#=================================================
-ynh_print_info "Restoring the PostregSQL database..."
-
-db_pwd=$(ynh_app_setting_get $app psqlpwd)
-ynh_psql_test_if_first_run
-ynh_psql_setup_db $db_name $db_name $db_pwd
-ynh_psql_connect_as $db_name $db_pwd $db_name < ./db.sql
+ynh_system_user_create --username=$app
 
 #=================================================
 # RESTORE USER RIGHTS
 #=================================================
+ynh_print_info --message="Restoring user rights..."
 
 # Restore permissions on app files
 chown -R www-data $final_path
@@ -96,38 +78,66 @@ chown -R www-data $final_path
 #=================================================
 # SPECIFIC RESTORATION
 #=================================================
+# REINSTALL DEPENDENCIES
+#=================================================
+ynh_print_info --message="Reinstalling dependencies..."
+
+# Define and install dependencies
+ynh_install_app_dependencies $pkg_dependencies
+
+# Install Carton
+echo yes | cpanm Carton
+
+#=================================================
+# RESTORE THE POSTGRESQL DATABASE
+#=================================================
+ynh_print_info --message="Restoring the PostregSQL database..."
+
+db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
+ynh_psql_test_if_first_run
+ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
+ynh_psql_connect_as --user=$db_user --password=$db_pwd --database=$db_name < ./db.sql
+
+#=================================================
 # RESTORE SYSTEMD
 #=================================================
-ynh_print_info "Restoring the systemd configuration..."
+ynh_print_info --message="Restoring the systemd configuration..."
 
-ynh_restore_file "/etc/systemd/system/$app.service"
+ynh_restore_file --origin_path="/etc/systemd/system/$app.service"
 systemctl enable $app.service
-ynh_systemd_action -n $app -a start -l "Server available at" -p "systemd"
 
 #=================================================
-# ADVERTISE SERVICE IN ADMIN PANEL
+# INTEGRATE SERVICE IN YUNOHOST
 #=================================================
+ynh_print_info --message="Integrating service in YunoHost..."
 
 yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/production.log"
 
 #=================================================
+# START SYSTEMD SERVICE
+#=================================================
+ynh_print_info --message="Starting a systemd service..."
+
+ynh_systemd_action --service_name=$app --action="start"  --log_path="systemd" --line_match="Server available at"
+
+#=================================================
 # RESTORE THE LOGROTATE CONFIGURATION
 #=================================================
+ynh_print_info --message="Restoring the logrotate configuration..."
 
-ynh_restore_file "/etc/logrotate.d/$app"
+ynh_restore_file --origin_path="/etc/logrotate.d/$app"
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_print_info --message="Reloading nginx web server..."
 
-systemctl reload nginx
-yunohost app ssowatconf
+ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Restoration completed for $app"
+ynh_print_info --message="Restoration completed for $app"
