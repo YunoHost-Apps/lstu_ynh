@@ -57,9 +57,8 @@ ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 ynh_print_info --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
-ynh_app_setting_set --app=$app --key=port --value=$port
 ynh_app_setting_set --app=$app --key=path --value=$path_url
+ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_app_setting_set --app=$app --key=theme --value=$theme
 ynh_app_setting_set --app=$app --key=secret --value=$secret
 ynh_app_setting_set --app=$app --key=hashed_password --value=$hashed_password
@@ -73,6 +72,7 @@ ynh_print_info --message="Configuring firewall..."
 
 # Find an available port
 port=$(ynh_find_port --port=8095)
+ynh_app_setting_set --app=$app --key=port --value=$port
 # Open this port
 ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
 
