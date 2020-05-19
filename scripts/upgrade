@@ -12,7 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info "Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -31,7 +31,7 @@ hashed_password=$(ynh_app_setting_get $app hashed_password)
 #=================================================
 # FIX OLD THINGS
 #=================================================
-ynh_print_info "Ensuring downward compatibility..."
+ynh_script_progression --message="Ensuring downward compatibility..."
 
 if [ "$is_public" = "Yes" ]; then
 	ynh_app_setting_set $app is_public 1	# Fixe is_public en booléen
@@ -83,7 +83,7 @@ fi
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_print_info "Backing up the app before upgrading (may take a while)..."
+ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -100,7 +100,7 @@ ynh_abort_if_errors
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_print_info "Upgrading source files..."
+ynh_script_progression --message="Upgrading source files..."
 
 ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
 
@@ -109,7 +109,7 @@ ynh_setup_source "$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_print_info "Upgrading nginx web server configuration..."
+ynh_script_progression --message="Upgrading nginx web server configuration..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -117,7 +117,7 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_print_info "Making sure dedicated system user exists..."
+ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
 ynh_system_user_create $app
@@ -127,7 +127,7 @@ ynh_system_user_create $app
 #=================================================
 # SETUP LSTU
 #=================================================
-ynh_print_info "Upgrading lstu configuration..."
+ynh_script_progression --message="Upgrading lstu configuration..."
 
 ynh_backup_if_checksum_is_different "$final_path/lstu.conf"
 cp ../conf/lstu.conf.template "${final_path}/lstu.conf"
@@ -158,7 +158,7 @@ chown -R www-data $final_path
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_print_info "Upgrading systemd configuration..."
+ynh_script_progression --message="Upgrading systemd configuration..."
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
@@ -174,7 +174,7 @@ popd
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_print_info "Upgrading logrotate configuration..."
+ynh_script_progression --message="Upgrading logrotate configuration..."
 
 # Use logrotate to manage app-specific logfile(s)
 ynh_use_logrotate --non-append
@@ -194,7 +194,7 @@ ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "s
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_print_info "Upgrading SSOwat configuration..."
+ynh_script_progression --message="Upgrading SSOwat configuration..."
 
 ynh_app_setting_set $app unprotected_uris "/"
 if [ $is_public -eq 0 ]
@@ -212,7 +212,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
 systemctl reload nginx
 yunohost app ssowatconf
@@ -221,4 +221,4 @@ yunohost app ssowatconf
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Upgrade of $app completed"
+ynh_script_progression --message="Upgrade of $app completed"

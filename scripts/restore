@@ -24,7 +24,7 @@ ynh_abort_if_errors
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info "Loading settings..."
+ynh_script_progression --message="Loading settings..."
 
 app=$YNH_APP_INSTANCE_NAME
 
@@ -36,7 +36,7 @@ db_name=$(ynh_app_setting_get $app db_name)
 #=================================================
 # CHECK IF THE APP CAN BE RESTORED
 #=================================================
-ynh_print_info "Validating restoration parameters..."
+ynh_script_progression --message="Validating restoration parameters..."
 
 ynh_webpath_available $domain $path_url \
 	|| ynh_die "Path not available: ${domain}${path_url}"
@@ -48,7 +48,7 @@ test ! -d $final_path \
 #=================================================
 # REINSTALL DEPENDENCIES
 #=================================================
-ynh_print_info "Reinstalling dependencies..."
+ynh_script_progression --message="Reinstalling dependencies..."
 
 # Define and install dependencies
 ynh_install_app_dependencies build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus
@@ -64,14 +64,14 @@ ynh_restore_file "/etc/nginx/conf.d/$domain.d/$app.conf"
 #=================================================
 # RESTORE THE APP MAIN DIR
 #=================================================
-ynh_print_info "Restoring the app main directory..."
+ynh_script_progression --message="Restoring the app main directory..."
 
 ynh_restore_file "$final_path"
 
 #=================================================
 # RECREATE THE DEDICATED USER
 #=================================================
-ynh_print_info "Recreating the dedicated system user..."
+ynh_script_progression --message="Recreating the dedicated system user..."
 
 # Create the dedicated user (if not existing)
 ynh_system_user_create $app
@@ -79,7 +79,7 @@ ynh_system_user_create $app
 #=================================================
 # RESTORE THE POSTGRESQL DATABASE
 #=================================================
-ynh_print_info "Restoring the PostregSQL database..."
+ynh_script_progression --message="Restoring the PostregSQL database..."
 
 db_pwd=$(ynh_app_setting_get $app psqlpwd)
 ynh_psql_test_if_first_run
@@ -98,7 +98,7 @@ chown -R www-data $final_path
 #=================================================
 # RESTORE SYSTEMD
 #=================================================
-ynh_print_info "Restoring the systemd configuration..."
+ynh_script_progression --message="Restoring the systemd configuration..."
 
 ynh_restore_file "/etc/systemd/system/$app.service"
 systemctl enable $app.service
@@ -121,7 +121,7 @@ ynh_restore_file "/etc/logrotate.d/$app"
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info "Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
 systemctl reload nginx
 yunohost app ssowatconf
@@ -130,4 +130,4 @@ yunohost app ssowatconf
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info "Restoration completed for $app"
+ynh_script_progression --message="Restoration completed for $app"
