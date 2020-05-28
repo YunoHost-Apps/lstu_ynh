@@ -12,7 +12,7 @@ source /usr/share/yunohost/helpers
 #=================================================
 # MANAGE SCRIPT FAILURE
 #=================================================
-ynh_print_info --message="Managing script failure..."
+ynh_script_progression --message="Managing script failure..." --weight=1
 
 ynh_clean_setup () {
 	ynh_clean_check_starting
@@ -23,7 +23,7 @@ ynh_abort_if_errors
 #=================================================
 # RETRIEVE ARGUMENTS FROM THE MANIFEST
 #=================================================
-ynh_print_info --message="Retrieving arguments from the manifest..."
+ynh_script_progression --message="Retrieving arguments from the manifest..." --weight=1
 
 domain=$YNH_APP_ARG_DOMAIN
 path_url=$YNH_APP_ARG_PATH
@@ -38,23 +38,18 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
 #=================================================
-ynh_script_progression --message="Validating installation parameters..."
+ynh_script_progression --message="Validating installation parameters..." --weight=1
 
 final_path=/var/www/$app
 test ! -e "$final_path" || ynh_die --message="This path already contains a folder"
 
-# Normalize the url path syntax
-path_url=$(ynh_normalize_url_path --path_url=$path_url)
-
-# Check web path availability
-ynh_webpath_available --domain=$domain --path_url=$path_url
 # Register (book) web path
 ynh_webpath_register --app=$app --domain=$domain --path_url=$path_url
 
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Configuring firewall..."
+ynh_script_progression --message="Configuring firewall..." --weight=1
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
@@ -68,7 +63,7 @@ ynh_app_setting_set --app=$app --key=hashed_password --value=$hashed_password
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Storing installation settings..."
+ynh_script_progression --message="Storing installation settings..." --weight=1
 
 # Find an available port
 port=$(ynh_find_port --port=8095)
@@ -84,7 +79,9 @@ ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
 #=================================================
 # INSTALL DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Installing dependencies..."
+ynh_script_progression --message="Installing dependencies..." --weight=1
+
+ynh_install_app_dependencies $pkg_dependencies
 
 # Install Carton
 echo yes | cpanm Carton
@@ -92,7 +89,7 @@ echo yes | cpanm Carton
 #=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
-ynh_script_progression --message="Creating a PostgreSQL database..."
+ynh_script_progression --message="Creating a PostgreSQL database..." --weight=1
 
 # Create postgresql database
 ynh_psql_test_if_first_run
@@ -105,7 +102,7 @@ db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd) # Password created in ynh
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..."
+ynh_script_progression --message="Setting up source files..." --weight=1
 
 ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
@@ -114,7 +111,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..."
+ynh_script_progression --message="Configuring nginx web server..." --weight=1
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -122,15 +119,15 @@ ynh_add_nginx_config
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Configuring system user..."
+ynh_script_progression --message="Configuring system user..." --weight=1
 
 # Create a system user
 ynh_system_user_create --username=$app
 
 #=================================================
-# Copy and fix variable into lstu config
+# CONFIGURE LSTU
 #=================================================
-ynh_script_progression --message="Configuring lstu..."
+ynh_script_progression --message="Configuring lstu..." --weight=1
 
 config="${final_path}/lstu.conf"
 cp ../conf/lstu.conf.template "$config"
@@ -143,26 +140,28 @@ ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --targ
 ynh_replace_string --match_string="__SELECTED_THEME__" --replace_string="$theme" --target_file="$config"
 ynh_replace_string --match_string="__PASSWORD_HASHED__" --replace_string="$hashed_password" --target_file="$config"
 ynh_replace_string --match_string="__SECRET__" --replace_string="$secret" --target_file="$config"
+
 if [ $is_public -eq 0 ];
 then
 	ynh_replace_string --match_string="__IS_PUBLIC__" --replace_string="" --target_file="$config"
 else
 	ynh_replace_string --match_string="__IS_PUBLIC__" --replace_string="#" --target_file="$config"
 fi
+
 ynh_store_file_checksum --file="$config"
 
 #=================================================
 # SETUP SYSTEMD
 #=================================================
-ynh_script_progression --message="Configuring a systemd service..."
+ynh_script_progression --message="Configuring a systemd service..." --weight=1
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
 
 #=================================================
-# BUILD LSTU
+# INSTALL LSTU
 #=================================================
-ynh_script_progression --message="Installing lstu..."
+ynh_script_progression --message="Installing lstu..." --weight=1
 
 pushd $final_path
 	carton install --deployment --without=sqlite --without=mysql
@@ -173,7 +172,7 @@ popd
 #=================================================
 # SECURE FILES AND DIRECTORIES
 #=================================================
-ynh_print_info --message="Securing files and directories..."
+ynh_script_progression --message="Securing files and directories..." --weight=1
 
 # Set permissions to app files
 chown -R www-data $final_path
@@ -181,7 +180,7 @@ chown -R www-data $final_path
 #=================================================
 # SETUP LOGROTATE
 #=================================================
-ynh_script_progression --message="Configuring log rotation..."
+ynh_script_progression --message="Configuring log rotation..." --weight=1
 
 # Use logrotate to manage application logfile(s)
 ynh_use_logrotate
@@ -189,14 +188,14 @@ ynh_use_logrotate
 #=================================================
 # INTEGRATE SERVICE IN YUNOHOST
 #=================================================
-ynh_print_info --message="Integrating service in YunoHost..."
+ynh_script_progression --message="Integrating service in YunoHost..." --weight=1
 
 yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/production.log"
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Starting a systemd service..."
+ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 # Start a systemd service
 ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Server available at"
@@ -204,7 +203,7 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --l
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
+ynh_script_progression --message="Configuring SSOwat..." --weight=1
 
 ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
 if [ $is_public -eq 0 ]
@@ -222,7 +221,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..." --weight=1
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -230,4 +229,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed"
+ynh_script_progression --message="Installation of $app completed" --last

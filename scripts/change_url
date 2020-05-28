@@ -12,7 +12,6 @@ source /usr/share/yunohost/helpers
 #=================================================
 # RETRIEVE ARGUMENTS
 #=================================================
-ynh_print_info --message="Retrieve arguments from the manifest"
 
 old_domain=$YNH_APP_OLD_DOMAIN
 old_path=$YNH_APP_OLD_PATH
@@ -25,7 +24,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..." --weight=1
 
 # Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -43,7 +42,7 @@ hashed_password=$(ynh_app_setting_get --app=$app --key=hashed_password)
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_print_info --message="Backing up the app before changing its url (may take a while)..."
+ynh_script_progression --message="Backing up the app before changing its url (may take a while)..." --weight=1
 
 # Backup the current version of the app
 ynh_backup_before_upgrade
@@ -78,14 +77,14 @@ fi
 #=================================================
 # STOP SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Stopping a systemd service..."
+ynh_script_progression --message="Stopping a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
 
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_script_progression --message="Updating nginx web server configuration..."
+ynh_script_progression --message="Updating nginx web server configuration..." --weight=1
 
 nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 
@@ -116,7 +115,7 @@ fi
 #=================================================
 # SETUP LSTU
 #=================================================
-ynh_script_progression --message="Updating lstu configuration..."
+ynh_script_progression --message="Updating lstu configuration..." --weight=1
 
 domain="$new_domain"
 path_url="$new_path"
@@ -146,14 +145,14 @@ ynh_store_file_checksum --file="$config"
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_print_info --message="Starting a systemd service..."
+ynh_script_progression --message="Starting a systemd service..." --weight=1
 
 ynh_systemd_action --service_name=$app --action="start"  --log_path="systemd" --line_match="Server available at"
 
 #=================================================
 # UPDATE SSOWAT
 #=================================================
-ynh_script_progression --message="Reconfigure SSOwat"
+ynh_script_progression --message="Reconfigure SSOwat" --weight=1
 
 if [ $is_public -eq 0 ]
 then
@@ -170,7 +169,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..." --weight=1
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -178,4 +177,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Change of URL completed for $app"
+ynh_script_progression --message="Change of URL completed for $app" --last
