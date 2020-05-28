@@ -25,7 +25,7 @@ app=$YNH_APP_INSTANCE_NAME
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_print_info --message="Loading installation settings..."
+ynh_script_progression --message="Loading installation settings..."
 
 # Needed for helper "ynh_add_nginx_config"
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
@@ -85,7 +85,7 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
 #=================================================
 # MODIFY URL IN NGINX CONF
 #=================================================
-ynh_print_info --message="Updating nginx web server configuration..."
+ynh_script_progression --message="Updating nginx web server configuration..."
 
 nginx_conf_path=/etc/nginx/conf.d/$old_domain.d/$app.conf
 
@@ -116,7 +116,7 @@ fi
 #=================================================
 # SETUP LSTU
 #=================================================
-ynh_print_info --message="Updating lstu configuration..."
+ynh_script_progression --message="Updating lstu configuration..."
 
 domain="$new_domain"
 path_url="$new_path"
@@ -153,7 +153,7 @@ ynh_systemd_action --service_name=$app --action="start"  --log_path="systemd" --
 #=================================================
 # UPDATE SSOWAT
 #=================================================
-ynh_print_info --message="Reconfigure SSOwat"
+ynh_script_progression --message="Reconfigure SSOwat"
 
 if [ $is_public -eq 0 ]
 then
@@ -170,7 +170,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_print_info --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading nginx web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
@@ -178,4 +178,4 @@ ynh_systemd_action --service_name=nginx --action=reload
 # END OF SCRIPT
 #=================================================
 
-ynh_print_info --message="Change of URL completed for $app"
+ynh_script_progression --message="Change of URL completed for $app"
