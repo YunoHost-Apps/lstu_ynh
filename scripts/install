@@ -28,7 +28,7 @@ path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
 theme=$YNH_APP_ARG_THEME
 password=$YNH_APP_ARG_PASSWORD
-secret=$(ynh_string_random 24)
+secret=$(ynh_string_random --length=24)
 hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 
 app=$YNH_APP_INSTANCE_NAME
