@@ -93,7 +93,6 @@ echo yes | cpanm Carton
 #=================================================
 ynh_script_progression --message="Restoring the PostregSQL database..."
 
-
 ynh_psql_test_if_first_run
 db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
 ynh_psql_setup_db --db_user=$db_user --db_name=$db_name --db_pwd=$db_pwd
