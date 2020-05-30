@@ -123,6 +123,8 @@ ynh_script_progression --message="Configuring system user..."
 ynh_system_user_create --username=$app
 
 #=================================================
+# SPECIFIC SETUP
+#=================================================
 # CONFIGURE LSTU
 #=================================================
 ynh_script_progression --message="Configuring lstu..."
@@ -149,14 +151,6 @@ fi
 ynh_store_file_checksum --file="$config"
 
 #=================================================
-# SETUP SYSTEMD
-#=================================================
-ynh_script_progression --message="Configuring a systemd service..."
-
-# Create a dedicated systemd config
-ynh_add_systemd_config
-
-#=================================================
 # INSTALL LSTU
 #=================================================
 ynh_script_progression --message="Installing lstu..."
@@ -164,6 +158,14 @@ ynh_script_progression --message="Installing lstu..."
 pushd $final_path
 	carton install --deployment --without=sqlite --without=mysql
 popd
+
+#=================================================
+# SETUP SYSTEMD
+#=================================================
+ynh_script_progression --message="Configuring a systemd service..."
+
+# Create a dedicated systemd config
+ynh_add_systemd_config
 
 #=================================================
 # GENERIC FINALIZATION
