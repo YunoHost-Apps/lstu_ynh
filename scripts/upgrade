@@ -58,6 +58,7 @@ fi
 if [ -z "$db_pwd" ]; then
 	db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)	# Fix old db_pwd
 	if [ -z "$db_pwd" ]; then
+		ynh_psql_test_if_first_run
 		db_name=$(ynh_sanitize_dbid --db_name="$app")
 		db_user=$db_name
 		# Initialize database and store postgres password for upgrade
