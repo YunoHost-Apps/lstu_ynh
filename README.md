@@ -1,9 +1,9 @@
 # Lstu app for YunoHost
 
 [![Integration level](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)  
-[![Install lstu with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=lstu)
+[![Install Lstu with YunoHost](https://install-app.yunohost.org/install-with-yunohost.png)](https://install-app.yunohost.org/?app=lstu)
 
-> *This package allows you to install lstu quickly and simply on a YunoHost server.  
+> *This package allows you to install Lstu quickly and simply on a YunoHost server.  
 If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
 
 ## Overview
