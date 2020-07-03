@@ -28,7 +28,7 @@ theme_old=$(ynh_app_setting_get $app theme)
 
 if [ "$theme" == "$theme_old" ]
 then
-	ynh_die "Same theme." 0
+	ynh_die --message="Same theme." --ret_code=0
 fi
 
 #=================================================
