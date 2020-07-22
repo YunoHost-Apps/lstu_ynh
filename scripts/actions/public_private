@@ -41,7 +41,7 @@ is_public_old=$(ynh_app_setting_get $app is_public)
 
 if [ $is_public -eq $is_public_old ]
 then
-	ynh_die "is_public is already set as $is_public." 0
+	ynh_die --message="is_public is already set as $is_public." --ret_code=0
 fi
 
 #=================================================
