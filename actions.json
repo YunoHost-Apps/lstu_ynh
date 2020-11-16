@@ -8,14 +8,16 @@
 			0
 		],
 		"description": {
-			"en": "Change the public access of the app."
+			"en": "Change the public access of the app.",
+			"fr": "Modifiez l'accès public de l'application."
 		},
 		"arguments": [
 			{
 				"name": "is_public",
 				"type": "boolean",
 				"ask": {
-					"en": "Is it a public app ?"
+					"en": "Is it a public app?",
+					"fr": "Est-ce une application publique ?"
 				},
 				"default": true
 			}
