@@ -4,7 +4,7 @@ Documentation=https://framagit.org/luc/lstu
 
 [Service]
 Type=forking
-User=www-data
+User=__APP__
 WorkingDirectory=__FINALPATH__
 ExecStart=/usr/bin/carton exec script/application minion worker
 
