@@ -6,7 +6,7 @@ After=network.target
 
 [Service]
 Type=forking
-User=__APP__
+User=www-data
 Restart=always
 RestartSec=10
 WorkingDirectory=__FINALPATH__
