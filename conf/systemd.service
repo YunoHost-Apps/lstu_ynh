@@ -7,6 +7,7 @@ After=network.target
 [Service]
 Type=forking
 User=__APP__
+Group=__APP__
 Restart=always
 RestartSec=10
 WorkingDirectory=__FINALPATH__
