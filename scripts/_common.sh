@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql cpanminus"
+pkg_dependencies="build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql carton"
 
 #=================================================
 # PERSONAL HELPERS

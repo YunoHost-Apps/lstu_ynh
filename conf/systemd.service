@@ -11,9 +11,9 @@ Restart=always
 RestartSec=10
 WorkingDirectory=__FINALPATH__
 PIDFile=__FINALPATH__/script/hypnotoad.pid
-ExecStart=/usr/local/bin/carton exec hypnotoad script/lstu
-ExecStop=/usr/local/bin/carton exec hypnotoad -s script/lstu
-ExecReload=/usr/local/bin/carton exec hypnotoad script/lstu
+ExecStart=/usr/bin/carton exec hypnotoad script/lstu
+ExecStop=/usr/bin/carton exec hypnotoad -s script/lstu
+ExecReload=/usr/bin/carton exec hypnotoad script/lstu
 
 [Install]
 WantedBy=multi-user.target
