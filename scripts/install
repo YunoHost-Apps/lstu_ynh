@@ -165,7 +165,7 @@ ynh_add_systemd_config
 ynh_script_progression --message="Securing files and directories..."
 
 # Set permissions to app files
-chown -R www-data $final_path
+chown -R $app $final_path
 
 #=================================================
 # SETUP LOGROTATE
