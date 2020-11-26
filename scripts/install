@@ -61,18 +61,11 @@ ynh_app_setting_set --app=$app --key=hashed_password --value=$hashed_password
 #=================================================
 # FIND AND OPEN A PORT
 #=================================================
-ynh_script_progression --message="Configuring firewall..."
+ynh_script_progression --message="Finding an available port..."
 
 # Find an available port
 port=$(ynh_find_port --port=8095)
 ynh_app_setting_set --app=$app --key=port --value=$port
-
-# Optional: Expose this port publicly
-# (N.B. : you only need to do this if the app actually needs to expose the port publicly.
-# If you do this and the app doesn't actually need you are CREATING SECURITY HOLES IN THE SERVER !)
-
-# Open the port
-ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
 
 #=================================================
 # INSTALL DEPENDENCIES
@@ -80,9 +73,6 @@ ynh_exec_warn_less yunohost firewall allow --no-upnp TCP $port
 ynh_script_progression --message="Installing dependencies..."
 
 ynh_install_app_dependencies $pkg_dependencies
-
-# Install Carton
-echo yes | cpanm Carton
 
 #=================================================
 # CREATE A POSTGRESQL DATABASE
