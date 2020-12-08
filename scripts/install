@@ -117,7 +117,7 @@ ynh_system_user_create --username=$app
 #=================================================
 # CONFIGURE LSTU
 #=================================================
-ynh_script_progression --message="Configuring lstu..."
+ynh_script_progression --message="Configuring Lstu..."
 
 config="${final_path}/lstu.conf"
 cp ../conf/lstu.conf.template "$config"
@@ -143,7 +143,7 @@ ynh_store_file_checksum --file="$config"
 #=================================================
 # INSTALL LSTU
 #=================================================
-ynh_script_progression --message="Installing lstu..."
+ynh_script_progression --message="Installing Lstu..."
 
 pushd $final_path
 	carton install --deployment --without=sqlite --without=mysql
@@ -165,7 +165,7 @@ ynh_add_systemd_config
 ynh_script_progression --message="Securing files and directories..."
 
 # Set permissions to app files
-chown -R $app $final_path
+chown -R $app: $final_path
 
 #=================================================
 # SETUP LOGROTATE
