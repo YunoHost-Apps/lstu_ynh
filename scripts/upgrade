@@ -221,6 +221,13 @@ ynh_script_progression --message="Securing files and directories..."
 chown -R www-data $final_path
 
 #=================================================
+# INTEGRATE SERVICE IN YUNOHOST
+#=================================================
+ynh_script_progression --message="Integrating service in YunoHost..."
+
+yunohost service add $app --log="/var/log/$app.log" --log="/var/www/$app/log/production.log"
+
+#=================================================
 # SETUP SSOWAT
 #=================================================
 ynh_script_progression --message="Upgrading SSOwat configuration..."
