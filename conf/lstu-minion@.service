@@ -5,6 +5,8 @@ Documentation=https://framagit.org/luc/lstu
 [Service]
 Type=forking
 User=__APP__
+Restart=always
+RestartSec=10
 WorkingDirectory=__FINALPATH__
 ExecStart=/usr/bin/carton exec script/application minion worker
 
