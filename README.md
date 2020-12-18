@@ -7,13 +7,13 @@
 If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/install) to learn how to install it.*
 
 ## Overview
-Lstu means Let's Shorten That Url.
+Lstu means Let's Shorten That URL.
 
 **Shipped version:** 0.22-0
 
 ## Screenshots
 
-![](https://framalibre.org/sites/default/files/Screenshot_20161213_120016_1.png)
+![](LSTU_screenshot.png)
 
 ## Demo
 
