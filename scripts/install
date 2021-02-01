@@ -99,7 +99,7 @@ ynh_setup_source --dest_dir="$final_path"
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring nginx web server..."
+ynh_script_progression --message="Configuring NGINX web server..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
@@ -117,7 +117,7 @@ ynh_system_user_create --username=$app
 #=================================================
 # CONFIGURE LSTU
 #=================================================
-ynh_script_progression --message="Configuring lstu..."
+ynh_script_progression --message="Configuring Lstu..."
 
 config="${final_path}/lstu.conf"
 cp ../conf/lstu.conf.template "$config"
@@ -143,7 +143,7 @@ ynh_store_file_checksum --file="$config"
 #=================================================
 # INSTALL LSTU
 #=================================================
-ynh_script_progression --message="Installing lstu..."
+ynh_script_progression --message="Installing Lstu..."
 
 pushd $final_path
 	carton install --deployment --without=sqlite --without=mysql
@@ -165,7 +165,7 @@ ynh_add_systemd_config
 ynh_script_progression --message="Securing files and directories..."
 
 # Set permissions to app files
-chown -R www-data $final_path
+chown -R $app: $final_path
 
 #=================================================
 # SETUP LOGROTATE
@@ -180,7 +180,7 @@ ynh_use_logrotate
 #=================================================
 ynh_script_progression --message="Integrating service in YunoHost..."
 
-yunohost service add $app --log "/var/log/$app.log" --log "/var/www/$app/log/production.log"
+yunohost service add $app --log="/var/log/$app.log" --log="/var/www/$app/log/production.log"
 
 #=================================================
 # START SYSTEMD SERVICE
@@ -211,7 +211,7 @@ fi
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading nginx web server..."
+ynh_script_progression --message="Reloading NGINX web server..."
 
 ynh_systemd_action --service_name=nginx --action=reload
 
