@@ -57,9 +57,3 @@ sudo yunohost app install https://github.com/YunoHost-Apps/lstu_ynh/tree/testing
 or
 sudo yunohost app upgrade lstu -u https://github.com/YunoHost-Apps/lstu_ynh/tree/testing --debug
 ```
-
-## Todo
-
-- [ ] Allow to choose the database (sqlite or PostgreSQL)
-- [ ] Allow to choose to use Minion
-- [ ] Add CI stuff

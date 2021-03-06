@@ -29,11 +29,11 @@
     # secret hashed passphrase to access some admin features
     # Hash your password by issuing `echo -n s3cr3T | sha256sum` on your terminal
     # optional, but you won't have access to admin /stats if not set and if adminpwd is not set either
-    hashed_adminpwd => '__PASSWORD_HASHED__',
+    hashed_adminpwd => '__HASHED_PASSWORD__',
 
     # choose a theme. See the available themes in `themes` directory
     # optional, default is 'default'
-    theme         => '__SELECTED_THEME__', # default or milligram
+    theme         => '__THEME__', # default or milligram
 
     # number of URLs to be displayed per page in /stats
     # optional, default is 10
