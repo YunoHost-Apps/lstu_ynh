@@ -51,7 +51,6 @@ ynh_script_progression --message="Storing installation settings..."
 
 ynh_app_setting_set --app=$app --key=domain --value=$domain
 ynh_app_setting_set --app=$app --key=path --value=$path_url
-ynh_app_setting_set --app=$app --key=is_public --value=$is_public
 ynh_app_setting_set --app=$app --key=theme --value=$theme
 ynh_app_setting_set --app=$app --key=secret --value=$secret
 ynh_app_setting_set --app=$app --key=hashed_password --value=$hashed_password
@@ -195,7 +194,7 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --l
 #=================================================
 ynh_script_progression --message="Configuring SSOwat..."
 
-ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+
 if [ $is_public -eq 0 ]
 then
 	# If the app is private, only the shortened URLs are publics.
@@ -204,8 +203,8 @@ then
 	    path_url=""
 	fi
 	# Modify the domain to be used in a regex
-	domain_regex=$(echo "$domain" | sed 's@-@.@g')
-	ynh_app_setting_set --app=$app --key=protected_regex --value="$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
+
+
 fi
 
 #=================================================
