@@ -36,8 +36,8 @@ How to configure this app: a plain file at `/var/www/lstu/lstu.conf` with SSH.
 
 #### Supported architectures
 
-* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/lstu%20%28Apps%29.svg)](https://ci-apps.yunohost.org/ci/apps/lstu/)
-* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/lstu%20%28Apps%29.svg)](https://ci-apps-arm.yunohost.org/ci/apps/lstu/)
+* x86-64 - [![Build Status](https://ci-apps.yunohost.org/ci/logs/lstu.svg)](https://ci-apps.yunohost.org/ci/apps/lstu/)
+* ARMv8-A - [![Build Status](https://ci-apps-arm.yunohost.org/ci/logs/lstu.svg)](https://ci-apps-arm.yunohost.org/ci/apps/lstu/)
 
 ## Links
 
@@ -57,9 +57,3 @@ sudo yunohost app install https://github.com/YunoHost-Apps/lstu_ynh/tree/testing
 or
 sudo yunohost app upgrade lstu -u https://github.com/YunoHost-Apps/lstu_ynh/tree/testing --debug
 ```
-
-## Todo
-
-- [ ] Allow to choose the database (sqlite or PostgreSQL)
-- [ ] Allow to choose to use Minion
-- [ ] Add CI stuff

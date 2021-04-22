@@ -14,7 +14,7 @@
 		"email": "abld@abld.info"
 	},
 	"requirements": {
-        "yunohost": ">= 4.0"
+        "yunohost": ">= 4.1.7"
 	},
 	"multi_instance": true,
 	"services": [
@@ -25,29 +25,17 @@
 			{
 				"name": "domain",
 				"type": "domain",
-				"ask": {
-					"en": "Choose a domain for Lstu",
-					"fr": "Choisissez un domaine pour Lstu"
-				},
 				"example": "domain.org"
 			},
 			{
 				"name": "path",
 				"type": "path",
-				"ask": {
-					"en": "Choose a path for Lstu",
-					"fr": "Choisissez un chemin pour Lstu"
-				},
 				"example": "/lstu",
 				"default": "/lstu"
 			},
 			{
 				"name": "is_public",
 				"type": "boolean",
-				"ask": {
-					"en": "Is it a public application?",
-					"fr": "Est-ce une application publique ?"
-				},
 				"default": false
 			},
 			{
@@ -66,10 +54,6 @@
 			{
 				"name": "password",
 				"type": "password",
-				"ask": {
-					"en": "Choose a password",
-					"fr": "Choisissez un mot de passe"
-				}
 			}
 		]
 	}
