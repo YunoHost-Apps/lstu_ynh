@@ -87,6 +87,14 @@ ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 ynh_psql_setup_db --db_user=$db_user --db_name=$db_name
 
 #=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir="$final_path"
+
+#=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
 ynh_script_progression --message="Setting up source files..."
@@ -95,6 +103,10 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
 
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:www-data "$final_path"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -102,14 +114,6 @@ ynh_script_progression --message="Configuring NGINX web server..."
 
 # Create a dedicated nginx config
 ynh_add_nginx_config
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..."
-
-# Create a system user
-ynh_system_user_create --username=$app
 
 #=================================================
 # SPECIFIC SETUP
@@ -155,16 +159,6 @@ ynh_script_progression --message="Configuring a systemd service..."
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-ynh_script_progression --message="Securing files and directories..."
-
-# Set permissions to app files
-chown -R $app: $final_path
 
 #=================================================
 # SETUP LOGROTATE
