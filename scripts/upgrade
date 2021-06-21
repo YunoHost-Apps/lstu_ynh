@@ -159,15 +159,6 @@ ynh_script_progression --message="Upgrading dependencies..."
 ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
-# BUILD LSU
-#=================================================
-ynh_script_progression --message="Building lstu..."
-
-pushd $final_path
-	carton install --deployment --without=sqlite --without=mysql
-popd
-
-#=================================================
 # CONFIGURE LSTU
 #=================================================
 ynh_script_progression --message="Configuring Lstu..."
@@ -178,6 +169,15 @@ then
 else
 	ynh_add_config --template="../conf/lstu.conf.template" --destination="$final_path/lstu.conf"
 fi
+
+#=================================================
+# BUILD LSU
+#=================================================
+ynh_script_progression --message="Building lstu..."
+
+pushd $final_path
+	carton install --deployment --without=sqlite --without=mysql
+popd
 
 #=================================================
 # SETUP LOGROTATE
