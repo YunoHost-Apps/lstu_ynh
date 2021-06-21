@@ -8,6 +8,13 @@
 	},
 	"version": "0.23-0~ynh1",
 	"url": "https://lstu.fr",
+	"upstream": {
+        "license": "WTFPL",
+        "website": "https://lstu.fr",
+        "demo": "https://lstu.fr",
+        "admindoc": "https://framagit.org/fiat-tux/hat-softwares/lstu/wikis/home",
+        "code": "https://framagit.org/fiat-tux/hat-softwares/lstu"
+    },
 	"license": "WTFPL",
 	"maintainer": {
 		"name": "frju365",
