@@ -4,7 +4,7 @@
 	"packaging_format": 1,
 	"description": {
 		"en": "URL Shortener",
-		"fr": "Raccoursisseur d'URL"
+		"fr": "Raccourcisseur d'URL"
 	},
 	"version": "0.22-0~ynh2",
 	"url": "https://lstu.fr",
