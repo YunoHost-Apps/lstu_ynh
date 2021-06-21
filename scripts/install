@@ -130,8 +130,8 @@ ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_f
 ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$config"
 ynh_replace_string --match_string="__DB_USER__" --replace_string="$db_user" --target_file="$config"
 ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$config"
-ynh_replace_string --match_string="__SELECTED_THEME__" --replace_string="$theme" --target_file="$config"
-ynh_replace_string --match_string="__PASSWORD_HASHED__" --replace_string="$hashed_password" --target_file="$config"
+ynh_replace_string --match_string="__THEME__" --replace_string="$theme" --target_file="$config"
+ynh_replace_string --match_string="__HASHED_PASSWORD__" --replace_string="$hashed_password" --target_file="$config"
 ynh_replace_string --match_string="__SECRET__" --replace_string="$secret" --target_file="$config"
 
 if [ $is_public -eq 0 ];
