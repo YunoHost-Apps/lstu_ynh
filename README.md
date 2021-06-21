@@ -9,7 +9,7 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 ## Overview
 Lstu means Let's Shorten That URL.
 
-**Shipped version:** 0.22-0
+**Shipped version:** 0.23-0
 
 ## Screenshots
 
