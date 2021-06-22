@@ -6,15 +6,22 @@
 		"en": "URL Shortener",
 		"fr": "Raccourcisseur d'URL"
 	},
-	"version": "0.22-0~ynh2",
+	"version": "0.23-0~ynh1",
 	"url": "https://lstu.fr",
+	"upstream": {
+        "license": "WTFPL",
+        "website": "https://lstu.fr",
+        "demo": "https://lstu.fr",
+        "admindoc": "https://framagit.org/fiat-tux/hat-softwares/lstu/wikis/home",
+        "code": "https://framagit.org/fiat-tux/hat-softwares/lstu"
+    },
 	"license": "WTFPL",
 	"maintainer": {
 		"name": "frju365",
 		"email": "abld@abld.info"
 	},
 	"requirements": {
-        "yunohost": ">= 4.0"
+        "yunohost": ">= 4.2.4"
 	},
 	"multi_instance": true,
 	"services": [
@@ -25,29 +32,17 @@
 			{
 				"name": "domain",
 				"type": "domain",
-				"ask": {
-					"en": "Choose a domain for Lstu",
-					"fr": "Choisissez un domaine pour Lstu"
-				},
 				"example": "domain.org"
 			},
 			{
 				"name": "path",
 				"type": "path",
-				"ask": {
-					"en": "Choose a path for Lstu",
-					"fr": "Choisissez un chemin pour Lstu"
-				},
 				"example": "/lstu",
 				"default": "/lstu"
 			},
 			{
 				"name": "is_public",
 				"type": "boolean",
-				"ask": {
-					"en": "Is it a public application?",
-					"fr": "Est-ce une application publique ?"
-				},
 				"default": false
 			},
 			{
@@ -66,10 +61,7 @@
 			{
 				"name": "password",
 				"type": "password",
-				"ask": {
-					"en": "Choose a password",
-					"fr": "Choisissez un mot de passe"
-				}
+				"example": "Choose a password"
 			}
 		]
 	}

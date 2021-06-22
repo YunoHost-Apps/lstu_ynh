@@ -85,7 +85,14 @@ db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 ynh_psql_setup_db --db_user=$db_user --db_name=$db_name
-db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd) # Password created in ynh_psql_setup_db function
+
+#=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -96,6 +103,10 @@ ynh_app_setting_set --app=$app --key=final_path --value=$final_path
 # Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$final_path"
 
+chmod 750 "$final_path"
+chmod -R o-rwx "$final_path"
+chown -R $app:www-data "$final_path"
+
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
@@ -105,40 +116,18 @@ ynh_script_progression --message="Configuring NGINX web server..."
 ynh_add_nginx_config
 
 #=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..."
-
-# Create a system user
-ynh_system_user_create --username=$app
-
-#=================================================
 # SPECIFIC SETUP
 #=================================================
 # CONFIGURE LSTU
 #=================================================
 ynh_script_progression --message="Configuring Lstu..."
 
-config="${final_path}/lstu.conf"
-cp ../conf/lstu.conf.template "$config"
-ynh_replace_string --match_string="__DOMAIN__" --replace_string="$domain" --target_file="$config"
-ynh_replace_string --match_string="__PATH__" --replace_string="$path_url" --target_file="$config"
-ynh_replace_string --match_string="__PORT__" --replace_string="$port" --target_file="$config"
-ynh_replace_string --match_string="__DB_NAME__" --replace_string="$db_name" --target_file="$config"
-ynh_replace_string --match_string="__DB_USER__" --replace_string="$db_user" --target_file="$config"
-ynh_replace_string --match_string="__DB_PWD__" --replace_string="$db_pwd" --target_file="$config"
-ynh_replace_string --match_string="__SELECTED_THEME__" --replace_string="$theme" --target_file="$config"
-ynh_replace_string --match_string="__PASSWORD_HASHED__" --replace_string="$hashed_password" --target_file="$config"
-ynh_replace_string --match_string="__SECRET__" --replace_string="$secret" --target_file="$config"
-
 if [ $is_public -eq 0 ];
 then
-	ynh_replace_string --match_string="__IS_PUBLIC__" --replace_string="" --target_file="$config"
+	ynh_add_config --template="../conf/lstu.conf.ldap" --destination="$final_path/lstu.conf"
 else
-	ynh_replace_string --match_string="__IS_PUBLIC__" --replace_string="#" --target_file="$config"
+	ynh_add_config --template="../conf/lstu.conf.template" --destination="$final_path/lstu.conf"
 fi
-
-ynh_store_file_checksum --file="$config"
 
 #=================================================
 # INSTALL LSTU
@@ -156,16 +145,6 @@ ynh_script_progression --message="Configuring a systemd service..."
 
 # Create a dedicated systemd config
 ynh_add_systemd_config
-
-#=================================================
-# GENERIC FINALIZATION
-#=================================================
-# SECURE FILES AND DIRECTORIES
-#=================================================
-ynh_script_progression --message="Securing files and directories..."
-
-# Set permissions to app files
-chown -R $app: $final_path
 
 #=================================================
 # SETUP LOGROTATE
@@ -193,9 +172,10 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --l
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring SSOwat..."
+ynh_script_progression --message="Configuring permissions..."
 
-ynh_app_setting_set --app=$app --key=unprotected_uris --value="/"
+ynh_permission_update --permission="main" --add="visitors"
+
 if [ $is_public -eq 0 ]
 then
 	# If the app is private, only the shortened URLs are publics.

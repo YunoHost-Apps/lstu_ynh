@@ -48,7 +48,7 @@ ynh_app_setting_set $app theme $theme
 # RELOAD NGINX
 #=================================================
 
-ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
+ynh_systemd_action --service_name=$app --action="reload" --log_path="systemd" --line_match="Server available at"
 
 #=================================================
 # END OF SCRIPT

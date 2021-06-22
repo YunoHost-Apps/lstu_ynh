@@ -1,5 +1,5 @@
-SOURCE_URL=https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.22-0/lstu-0.22-0.tar.gz
-SOURCE_SUM=644315d3a5af0fb5ec1e44c62fdb4f57d8985db75f70e4055eab5993dd405313
+SOURCE_URL=https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.23-0/lstu-0.23-0.tar.gz
+SOURCE_SUM=77bbe521403da22db2753fbeb4939a2decb220e0a21e88b4754a774a9a217c6d
 SOURCE_SUM_PRG=sha256sum
 SOURCE_FORMAT=tar.gz
 SOURCE_IN_SUBDIR=true
