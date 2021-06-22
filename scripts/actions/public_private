@@ -50,25 +50,12 @@ fi
 # MOVE TO PUBLIC OR PRIVATE
 #=================================================
 
-ynh_backup_if_checksum_is_different "$final_path/lstu.conf"
-cp conf/lstu.conf.template "${final_path}/lstu.conf"
-ynh_replace_string "__DOMAIN__" "$domain" "${final_path}/lstu.conf"
-ynh_replace_string "__PATH__" "$path_url" "${final_path}/lstu.conf"
-ynh_replace_string "__PORT__" "$port" "${final_path}/lstu.conf"
-ynh_replace_string "__DB_NAME__" "$db_name"  "${final_path}/lstu.conf"
-ynh_replace_string "__DB_USER__" "$db_user"  "${final_path}/lstu.conf"
-ynh_replace_string "__DB_PWD__" "$db_pwd" "${final_path}/lstu.conf"
-ynh_replace_string "__SELECTED_THEME__" "$theme" "${final_path}/lstu.conf"
-ynh_replace_string "__PASSWORD_HASHED__" "$hashed_password" "${final_path}/lstu.conf"
-
-ynh_replace_string "__SECRET__" "$secret" "${final_path}/lstu.conf"
 if [ $is_public -eq 0 ];
 then
-	ynh_replace_string "__IS_PUBLIC__" "" "${final_path}/lstu.conf"
+	ynh_add_config --template="../conf/lstu.conf.ldap" --destination="$final_path/lstu.conf"
 else
-	ynh_replace_string "__IS_PUBLIC__" "#" "${final_path}/lstu.conf"
+	ynh_add_config --template="../conf/lstu.conf.template" --destination="$final_path/lstu.conf"
 fi
-ynh_store_file_checksum "${final_path}/lstu.conf"
 
 if [ $is_public -eq 0 ]; then
 	public_private="private"
@@ -100,7 +87,7 @@ ynh_app_setting_set $app is_public $is_public
 # RELOAD NGINX
 #=================================================
 
-ynh_systemd_action -n $app -a reload -l "Reloaded Shortened URLs service." -p "systemd"
+ynh_systemd_action --service_name=$app --action="reload" --log_path="systemd" --line_match="Server available at"
 
 #=================================================
 # END OF SCRIPT
