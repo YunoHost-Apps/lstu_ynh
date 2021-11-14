@@ -31,8 +31,7 @@
 		"install": [
 			{
 				"name": "domain",
-				"type": "domain",
-				"example": "domain.org"
+				"type": "domain"
 			},
 			{
 				"name": "path",
@@ -60,8 +59,7 @@
 			},
 			{
 				"name": "password",
-				"type": "password",
-				"example": "Choose a password"
+				"type": "password"
 			}
 		]
 	}
