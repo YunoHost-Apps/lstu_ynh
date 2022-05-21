@@ -31,6 +31,11 @@
     # optional, but you won't have access to admin /stats if not set and if adminpwd is not set either
     hashed_adminpwd => '__HASHED_PASSWORD__',
 
+    # indicates if you want to really delete URLs from admin page (/stats)
+    # or just want to deactivate the shorten URL (won’t redirect anymore, can’t be used anymore)
+    # optional, default to 0 (false)
+    #really_delete_urls => 0,
+
     # choose a theme. See the available themes in `themes` directory
     # optional, default is 'default'
     theme         => '__THEME__', # default or milligram
@@ -65,6 +70,10 @@
     # if set, the shortened URLs will use this domain
     # optional
     #fixed_domain => 'example.org',
+
+    # if set to 1, Lstu will try to prevent its use without using the web interface
+    # optional, default is 0
+    #disable_api => 0,
 
     # choose what database you want to use
     # valid choices are sqlite, postgresql and mysql (all lowercase)
@@ -179,12 +188,12 @@
     # please note that everybody can still use shortend URLs
     # optional, no default
     #ldap => {
-    #   uri         => 'ldap://localhost:389',          # server URI
+    #   uri         => 'ldap://localhost:389',           # server URI
     #    user_tree   => 'dc=yunohost,dc=org',            # search base DN
     #    bind_dn     => 'ou=users,dc=yunohost,dc=org',   # search bind DN
     #    bind_pwd    => '',                              # search bind password
     #    user_attr   => 'uid',                           # user attribute (uid, mail, sAMAccountName, etc.)
-    #    user_filter => '(!(uid=ldap_user))',           # user filter (to exclude some users, etc.)
+    #    user_filter => '(!(uid=ldap_user))',            # user filter (to exclude some users, etc.)
     #},
 
     # set `htpasswd` if you want to use an htpasswd file instead of ldap
