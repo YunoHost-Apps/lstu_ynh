@@ -13,7 +13,7 @@ Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour
 
 Raccourcisseur d'URL
 
-**Version incluse :** 0.25-0~ynh1
+**Version incluse :** 0.25.0~ynh1
 
 **Démo :** https://lstu.fr
 
