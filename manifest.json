@@ -6,7 +6,7 @@
 		"en": "URL Shortener",
 		"fr": "Raccourcisseur d'URL"
 	},
-	"version": "0.23-0~ynh1",
+	"version": "0.25.0~ynh1",
 	"url": "https://lstu.fr",
 	"upstream": {
         "license": "WTFPL",
@@ -21,7 +21,7 @@
 		"email": "abld@abld.info"
 	},
 	"requirements": {
-        "yunohost": ">= 4.2.4"
+        "yunohost": ">= 4.3.0"
 	},
 	"multi_instance": true,
 	"services": [
@@ -51,10 +51,7 @@
 					"en": "Choose a theme",
 					"fr": "Choisissez un theme"
 				},
-				"choices": [
-					"default",
-					"milligram"
-				],
+				"choices": ["default", "milligram"],
 				"default": "milligram"
 			},
 			{
