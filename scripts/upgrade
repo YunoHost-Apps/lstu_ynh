@@ -18,6 +18,7 @@ app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get --app=$app --key=domain)
 path_url=$(ynh_app_setting_get --app=$app --key=path)
+is_public=$(ynh_app_setting_get --app=$app --key=is_public)
 port=$(ynh_app_setting_get --app=$app --key=port)
 final_path=$(ynh_app_setting_get --app=$app --key=final_path)
 secret=$(ynh_app_setting_get --app=$app --key=secret)
@@ -109,13 +110,6 @@ if yunohost firewall list | grep -q "\- $port$"
 then
 	ynh_script_progression --message="Closing port $port..."
 	ynh_exec_warn_less yunohost firewall disallow TCP $port
-fi
-
-# Cleaning legacy permissions
-if ynh_legacy_permissions_exists; then
-	ynh_legacy_permissions_delete_all
-
-	ynh_app_setting_delete --app=$app --key=is_public
 fi
 
 #=================================================
