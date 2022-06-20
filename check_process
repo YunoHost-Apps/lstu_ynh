@@ -1,11 +1,10 @@
-;; Nom du test
-	auto_remove=1
+;; Test complet
 	; Manifest
 		domain="domain.tld"
 		path="/path"
 		is_public=1
 		theme="milligram"
-		password="verysecretpassword"
+		password="1Strong-Password"
 	; Checks
 		pkg_linter=1
 		setup_sub_dir=1
@@ -15,10 +14,14 @@
 		setup_public=1
 		upgrade=1
 		#Merge pull request #52
-		upgrade=1        from_commit=469fb267ebc496d2c63b10de35aaf3493ce8124f
+		upgrade=1	from_commit=469fb267ebc496d2c63b10de35aaf3493ce8124f
 		backup_restore=1
 		multi_instance=1
+		port_already_use=0
 		change_url=1
+;;; Options
+Email=
+Notification=none
 ;;; Upgrade options
 	; commit=469fb267ebc496d2c63b10de35aaf3493ce8124f
 		name=Merge pull request #52

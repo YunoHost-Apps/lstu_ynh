@@ -28,10 +28,11 @@ path_url=$YNH_APP_ARG_PATH
 is_public=$YNH_APP_ARG_IS_PUBLIC
 theme=$YNH_APP_ARG_THEME
 password=$YNH_APP_ARG_PASSWORD
-secret=$(ynh_string_random --length=24)
-hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 
 app=$YNH_APP_INSTANCE_NAME
+
+secret=$(ynh_string_random --length=24)
+hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 
 #=================================================
 # CHECK IF THE APP CAN BE INSTALLED WITH THESE ARGS
@@ -75,6 +76,14 @@ ynh_script_progression --message="Installing dependencies..."
 ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
+# CREATE DEDICATED USER
+#=================================================
+ynh_script_progression --message="Configuring system user..."
+
+# Create a system user
+ynh_system_user_create --username=$app --home_dir="$final_path"
+
+#=================================================
 # CREATE A POSTGRESQL DATABASE
 #=================================================
 ynh_script_progression --message="Creating a PostgreSQL database..."
@@ -85,14 +94,6 @@ db_name=$(ynh_sanitize_dbid --db_name=$app)
 db_user=$db_name
 ynh_app_setting_set --app=$app --key=db_name --value=$db_name
 ynh_psql_setup_db --db_user=$db_user --db_name=$db_name
-
-#=================================================
-# CREATE DEDICATED USER
-#=================================================
-ynh_script_progression --message="Configuring system user..."
-
-# Create a system user
-ynh_system_user_create --username=$app --home_dir="$final_path"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -118,9 +119,9 @@ ynh_add_nginx_config
 #=================================================
 # SPECIFIC SETUP
 #=================================================
-# CONFIGURE LSTU
+# ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring Lstu..."
+ynh_script_progression --message="Adding a configuration file..."
 
 if [ $is_public -eq 0 ];
 then
@@ -174,14 +175,16 @@ ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --l
 #=================================================
 ynh_script_progression --message="Configuring permissions..."
 
+# Everyone can access the app.
+# The "main" permission is automatically created before the install script.
 ynh_permission_update --permission="main" --add="visitors"
 
 if [ $is_public -eq 0 ]
 then
 	# If the app is private, only the shortened URLs are publics.
 	if [ "$path_url" == "/" ]; then
-	    # If the path is /, clear it to prevent any error with the regex.
-	    path_url=""
+		# If the path is /, clear it to prevent any error with the regex.
+		path_url=""
 	fi
 	# Modify the domain to be used in a regex
 	domain_regex=$(echo "$domain" | sed 's@-@.@g')

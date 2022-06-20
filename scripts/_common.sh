@@ -149,3 +149,7 @@ __PRE_TAG1__$(yunohost tools diagnosis | grep -B 100 "services:" | sed '/service
 	# Send the email to the recipients
 	cat mail_to_send | $mail_bin -a "Content-Type: $content_type; charset=UTF-8" -s "$mail_subject" "$recipients"
 }
+
+#=================================================
+# FUTURE OFFICIAL HELPERS
+#=================================================
