@@ -15,9 +15,10 @@ If you don't have YunoHost, please consult [the guide](https://yunohost.org/#/in
 
 ## Overview
 
-URL Shortener
+Lstu means Let's Shorten That URL.
 
-**Shipped version:** 0.26.0~ynh1
+
+**Shipped version:** 0.26.0~ynh2
 
 **Demo:** https://lstu.fr
 
