@@ -20,6 +20,7 @@ Lstu means Let's Shorten That URL.
 
 **Shipped version:** 0.26.0~ynh2
 
+
 **Demo:** https://lstu.fr
 
 ## Screenshots
