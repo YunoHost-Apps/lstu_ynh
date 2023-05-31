@@ -27,12 +27,6 @@ Raccourcisseur d'URL
 
 ![Capture d’écran de Lstu](./doc/screenshots/LSTU_screenshot.png)
 
-## Avertissements / informations importantes
-
-## Configuration
-
-Comment configurer cette application : un fichier simple à `/var/www/lstu/lstu.conf` avec SSH.
-
 ## Documentations et ressources
 
 * Site officiel de l’app : <https://lstu.fr>

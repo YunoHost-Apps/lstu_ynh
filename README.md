@@ -27,12 +27,6 @@ Lstu means Let's Shorten That URL.
 
 ![Screenshot of Lstu](./doc/screenshots/LSTU_screenshot.png)
 
-## Disclaimers / important information
-
-## Configuration
-
-How to configure this app: a plain file at `/var/www/lstu/lstu.conf` with SSH.
-
 ## Documentation and resources
 
 * Official app website: <https://lstu.fr>
