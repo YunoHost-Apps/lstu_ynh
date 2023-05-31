@@ -4,9 +4,6 @@
 # COMMON VARIABLES
 #=================================================
 
-# dependencies used by the app
-#REMOVEME? pkg_dependencies="build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql carton libpod-parser-perl"
-
 #=================================================
 # PERSONAL HELPERS
 #=================================================
