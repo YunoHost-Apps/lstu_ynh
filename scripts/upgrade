@@ -12,21 +12,21 @@ source /usr/share/yunohost/helpers
 #=================================================
 # LOAD SETTINGS
 #=================================================
-ynh_script_progression --message="Loading installation settings..."
+#REMOVEME? ynh_script_progression --message="Loading installation settings..."
 
-app=$YNH_APP_INSTANCE_NAME
+#REMOVEME? app=$YNH_APP_INSTANCE_NAME
 
-domain=$(ynh_app_setting_get --app=$app --key=domain)
-path_url=$(ynh_app_setting_get --app=$app --key=path)
-is_public=$(ynh_app_setting_get --app=$app --key=is_public)
-port=$(ynh_app_setting_get --app=$app --key=port)
-final_path=$(ynh_app_setting_get --app=$app --key=final_path)
-secret=$(ynh_app_setting_get --app=$app --key=secret)
-db_name=$(ynh_app_setting_get --app=$app --key=db_name)
-db_user=$db_name
-db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
-theme=$(ynh_app_setting_get --app=$app theme)
-hashed_password=$(ynh_app_setting_get --app=$app --key=hashed_password)
+#REMOVEME? domain=$(ynh_app_setting_get --app=$app --key=domain)
+#REMOVEME? path=$(ynh_app_setting_get --app=$app --key=path)
+#REMOVEME? is_public=$(ynh_app_setting_get --app=$app --key=is_public)
+#REMOVEME? port=$(ynh_app_setting_get --app=$app --key=port)
+#REMOVEME? #REMOVEME? install_dir=$(ynh_app_setting_get --app=$app --key=install_dir)
+#REMOVEME? secret=$(ynh_app_setting_get --app=$app --key=secret)
+#REMOVEME? db_name=$(ynh_app_setting_get --app=$app --key=db_name)
+#REMOVEME? db_user=$db_name
+#REMOVEME? db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd)
+#REMOVEME? theme=$(ynh_app_setting_get --app=$app theme)
+#REMOVEME? hashed_password=$(ynh_app_setting_get --app=$app --key=hashed_password)
 
 #=================================================
 # CHECK VERSION
@@ -38,17 +38,17 @@ upgrade_type=$(ynh_check_app_version_changed)
 #=================================================
 # BACKUP BEFORE UPGRADE THEN ACTIVE TRAP
 #=================================================
-ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
+#REMOVEME? ynh_script_progression --message="Backing up the app before upgrading (may take a while)..."
 
 # Backup the current version of the app
-ynh_backup_before_upgrade
-ynh_clean_setup () {
+#REMOVEME? ynh_backup_before_upgrade
+#REMOVEME? ynh_clean_setup () {
 	ynh_clean_check_starting
 	# Restore it if the upgrade fails
-	ynh_restore_upgradebackup
+#REMOVEME? 	ynh_restore_upgradebackup
 }
 # Exit if an error occurs during the execution of the script
-ynh_abort_if_errors
+#REMOVEME? ynh_abort_if_errors
 
 #=================================================
 # STANDARD UPGRADE STEPS
@@ -64,25 +64,25 @@ ynh_systemd_action --service_name=$app --action="stop" --log_path="systemd"
 #=================================================
 ynh_script_progression --message="Ensuring downward compatibility..."
 
-# If final_path doesn't exist, create it
-if [ -z "$final_path" ]; then
-	final_path=/var/www/$app
-	ynh_app_setting_set --app=$app --key=final_path --value=$final_path
+# If install_dir doesn't exist, create it
+if [ -z "$install_dir" ]; then
+#REMOVEME? 	install_dir=/var/www/$app
+#REMOVEME? 	ynh_app_setting_set --app=$app --key=install_dir --value=$install_dir
 fi
 
 if [ -z "$db_pwd" ]; then
-	db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)	# Fix old db_pwd
+#REMOVEME? 	db_pwd=$(ynh_app_setting_get --app=$app --key=db_pwd)	# Fix old db_pwd
 	if [ -z "$db_pwd" ]; then
-		ynh_psql_test_if_first_run
+#REMOVEME? 		ynh_psql_test_if_first_run
 		db_name=$(ynh_sanitize_dbid --db_name="$app")
 		db_user=$db_name
 		# Initialize database and store postgres password for upgrade
-		ynh_psql_setup_db --db_user="$db_user" --db_name="$db_name"
-		ynh_app_setting_set --app="$app" --key=db_name --value="$db_name"
-		db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd) # Password created in ynh_psql_setup_db function
+#REMOVEME? 		ynh_psql_setup_db --db_user="$db_user" --db_name="$db_name"
+#REMOVEME? 		ynh_app_setting_set --app="$app" --key=db_name --value="$db_name"
+#REMOVEME? #REMOVEME? 		db_pwd=$(ynh_app_setting_get --app=$app --key=psqlpwd) # Password created in ynh_psql_setup_db function
 	else
 		ynh_app_setting_delete --app=$app --key=db_pwd
-		ynh_app_setting_set --app=$app --key=psqlpwd --value=$db_pwd
+#REMOVEME? 		ynh_app_setting_set --app=$app --key=psqlpwd --value=$db_pwd
 	fi
 fi
 
@@ -102,7 +102,7 @@ if [ -z "$hashed_password" ]; then
 
 	ynh_send_readme_to_admin --app_message="mail_to_send" --type="upgrade"
 	
-	ynh_app_setting_set --app=$app --key=hashed_password --value=$hashed_password
+#REMOVEME? 	ynh_app_setting_set --app=$app --key=hashed_password --value=$hashed_password
 fi
 
 # In previous versions, the port was mistakenly exposed to the outside world >_>
@@ -115,10 +115,10 @@ fi
 #=================================================
 # CREATE DEDICATED USER
 #=================================================
-ynh_script_progression --message="Making sure dedicated system user exists..."
+#REMOVEME? ynh_script_progression --message="Making sure dedicated system user exists..."
 
 # Create a dedicated user (if not existing)
-ynh_system_user_create --username=$app --home_dir="$final_path"
+#REMOVEME? ynh_system_user_create --username=$app --home_dir="$install_dir"
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
@@ -129,19 +129,19 @@ then
 	ynh_script_progression --message="Upgrading source files..."
 
 	# Download, check integrity, uncompress and patch the source from app.src
-	ynh_setup_source --dest_dir="$final_path" #--keep="lstu.conf"
+	ynh_setup_source --dest_dir="$install_dir" #--keep="lstu.conf"
 fi
 
-chmod 750 "$final_path"
-chmod -R o-rwx "$final_path"
-chown -R $app:www-data "$final_path"
+chmod 750 "$install_dir"
+chmod -R o-rwx "$install_dir"
+chown -R $app:www-data "$install_dir"
 
 #=================================================
 # UPGRADE DEPENDENCIES
 #=================================================
-ynh_script_progression --message="Upgrading dependencies..."
+#REMOVEME? ynh_script_progression --message="Upgrading dependencies..."
 
-ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
+#REMOVEME? ynh_exec_warn_less ynh_install_app_dependencies $pkg_dependencies
 
 #=================================================
 # NGINX CONFIGURATION
@@ -158,11 +158,11 @@ ynh_add_nginx_config
 #=================================================
 ynh_script_progression --message="Updating a configuration file..."
 
-if [ $is_public -eq 0 ];
+#REMOVEME? if [ $is_public -eq 0 ];
 then
-	ynh_add_config --template="../conf/lstu.conf.ldap" --destination="$final_path/lstu.conf"
+	ynh_add_config --template="../conf/lstu.conf.ldap" --destination="$install_dir/lstu.conf"
 else
-	ynh_add_config --template="../conf/lstu.conf.template" --destination="$final_path/lstu.conf"
+	ynh_add_config --template="../conf/lstu.conf.template" --destination="$install_dir/lstu.conf"
 fi
 
 #=================================================
@@ -170,7 +170,7 @@ fi
 #=================================================
 ynh_script_progression --message="Building lstu..."
 
-pushd $final_path
+pushd $install_dir
 	carton install --deployment --without=sqlite --without=mysql
 popd
 
@@ -209,30 +209,30 @@ ynh_systemd_action --service_name=$app --action=reload --line_match="Reloaded Sh
 #=================================================
 # SETUP SSOWAT
 #=================================================
-ynh_script_progression --message="Configuring permissions..."
+#REMOVEME? ynh_script_progression --message="Configuring permissions..."
 
 # Everyone can access the app.
 # The "main" permission is automatically created before the install script.
-ynh_permission_update --permission="main" --add="visitors"
+#REMOVEME? ynh_permission_update --permission="main" --add="visitors"
 
-if [ $is_public -eq 0 ]
+#REMOVEME? if [ $is_public -eq 0 ]
 then
 	# If the app is private, only the shortened URLs are publics.
-	if [ "$path_url" == "/" ]; then
+	if [ "$path" == "/" ]; then
 		# If the path is /, clear it to prevent any error with the regex.
-		path_url=""
+		path=""
 	fi
 	# Modify the domain to be used in a regex
 	domain_regex=$(echo "$domain" | sed 's@-@.@g')
-	ynh_app_setting_set --app=$app --key=protected_regex --value="$domain_regex$path_url/login$","$domain_regex$path_url/logout$","$domain_regex$path_url/api$","$domain_regex$path_url/extensions$","$domain_regex$path_url/stats$","$domain_regex$path_url/d/.*$","$domain_regex$path_url/a$","$domain_regex$path_url/$"
+#REMOVEME? 	ynh_app_setting_set --app=$app --key=protected_regex --value="$domain_regex$path/login$","$domain_regex$path/logout$","$domain_regex$path/api$","$domain_regex$path/extensions$","$domain_regex$path/stats$","$domain_regex$path/d/.*$","$domain_regex$path/a$","$domain_regex$path/$"
 fi
 
 #=================================================
 # RELOAD NGINX
 #=================================================
-ynh_script_progression --message="Reloading NGINX web server..."
+#REMOVEME? ynh_script_progression --message="Reloading NGINX web server..."
 
-ynh_systemd_action --service_name=nginx --action=reload
+#REMOVEME? ynh_systemd_action --service_name=nginx --action=reload
 
 #=================================================
 # END OF SCRIPT

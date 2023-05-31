@@ -5,7 +5,7 @@
 #=================================================
 
 # dependencies used by the app
-pkg_dependencies="build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql carton libpod-parser-perl"
+#REMOVEME? pkg_dependencies="build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql carton libpod-parser-perl"
 
 #=================================================
 # PERSONAL HELPERS
@@ -38,7 +38,7 @@ ynh_send_readme_to_admin() {
 	type="${type:-install}"
 
 	# Get the value of admin_mail_html
-	admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
+#REMOVEME? 	admin_mail_html=$(ynh_app_setting_get $app admin_mail_html)
 	admin_mail_html="${admin_mail_html:-0}"
 
 	# Retrieve the email of users
