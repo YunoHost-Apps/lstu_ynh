@@ -35,12 +35,7 @@ ynh_script_progression --message="Updating a configuration file..."
 domain="$new_domain"
 path="$new_path"
 
-#REMOVEME? if [ $is_public -eq 0 ];
-then
-	ynh_add_config --template="../conf/lstu.conf.ldap" --destination="$install_dir/lstu.conf"
-else
-	ynh_add_config --template="../conf/lstu.conf.template" --destination="$install_dir/lstu.conf"
-fi
+ynh_add_config --template="../conf/lstu.conf.ldap" --destination="$install_dir/lstu.conf"
 
 #=================================================
 # GENERIC FINALISATION
