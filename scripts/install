@@ -43,6 +43,14 @@ ynh_script_progression --message="Configuring NGINX web server..."
 # Create a dedicated nginx config
 ynh_add_nginx_config
 
+# Create a dedicated systemd config
+ynh_add_systemd_config
+
+# Use logrotate to manage application logfile(s)
+ynh_use_logrotate
+
+yunohost service add $app --log="/var/log/$app.log" --log="/var/www/$app/log/production.log"
+
 #=================================================
 # SPECIFIC SETUP
 #=================================================
@@ -60,29 +68,6 @@ ynh_script_progression --message="Installing Lstu..."
 pushd $install_dir
 	carton install --deployment --without=sqlite --without=mysql
 popd
-
-#=================================================
-# SETUP SYSTEMD
-#=================================================
-ynh_script_progression --message="Configuring a systemd service..."
-
-# Create a dedicated systemd config
-ynh_add_systemd_config
-
-#=================================================
-# SETUP LOGROTATE
-#=================================================
-ynh_script_progression --message="Configuring log rotation..."
-
-# Use logrotate to manage application logfile(s)
-ynh_use_logrotate
-
-#=================================================
-# INTEGRATE SERVICE IN YUNOHOST
-#=================================================
-ynh_script_progression --message="Integrating service in YunoHost..."
-
-yunohost service add $app --log="/var/log/$app.log" --log="/var/www/$app/log/production.log"
 
 #=================================================
 # START SYSTEMD SERVICE
