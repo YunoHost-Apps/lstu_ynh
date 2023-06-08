@@ -1,7 +1,0 @@
-SOURCE_URL=https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.26-0/lstu-0.26-0.tar.gz
-SOURCE_SUM=323c81b4cb04a97eda7cb37b2a63d16e808591fd46eb4326f6619200ce742960
-SOURCE_SUM_PRG=sha256sum
-SOURCE_FORMAT=tar.gz
-SOURCE_IN_SUBDIR=true
-SOURCE_FILENAME=
-SOURCE_EXTRACT=true

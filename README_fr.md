@@ -5,39 +5,33 @@ It shall NOT be edited by hand.
 
 # Lstu pour YunoHost
 
-[![Niveau d'intégration](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)  
+[![Niveau d’intégration](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)
+
 [![Installer Lstu avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lstu)
 
 *[Read this readme in english.](./README.md)*
 
-> *Ce package vous permet d'installer Lstu rapidement et simplement sur un serveur YunoHost.
-Si vous n'avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l'installer et en profiter.*
+> *Ce package vous permet d’installer Lstu rapidement et simplement sur un serveur YunoHost.
+Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) pour savoir comment l’installer et en profiter.*
 
-## Vue d'ensemble
+## Vue d’ensemble
 
 Raccourcisseur d'URL
 
 
-**Version incluse :** 0.26.0~ynh2
-
+**Version incluse :** 0.26.0~ynh2
 
 **Démo :** https://lstu.fr
 
-## Captures d'écran
+## Captures d’écran
 
-![Capture d'écran de Lstu](./doc/screenshots/LSTU_screenshot.png)
-
-## Avertissements / informations importantes
-
-## Configuration
-
-Comment configurer cette application : un fichier simple à `/var/www/lstu/lstu.conf` avec SSH.
+![Capture d’écran de Lstu](./doc/screenshots/LSTU_screenshot.png)
 
 ## Documentations et ressources
 
-* Site officiel de l'app : <https://lstu.fr>
-* Documentation officielle de l'admin : <https://framagit.org/fiat-tux/hat-softwares/lstu/wikis/home>
-* Dépôt de code officiel de l'app : <https://framagit.org/fiat-tux/hat-softwares/lstu>
+* Site officiel de l’app : <https://lstu.fr>
+* Documentation officielle de l’admin : <https://framagit.org/fiat-tux/hat-softwares/lstu/wikis/home>
+* Dépôt de code officiel de l’app : <https://framagit.org/fiat-tux/hat-softwares/lstu>
 * Documentation YunoHost pour cette app : <https://yunohost.org/app_lstu>
 * Signaler un bug : <https://github.com/YunoHost-Apps/lstu_ynh/issues>
 
@@ -53,4 +47,4 @@ ou
 sudo yunohost app upgrade lstu -u https://github.com/YunoHost-Apps/lstu_ynh/tree/testing --debug
 ```
 
-**Plus d'infos sur le packaging d'applications :** <https://yunohost.org/packaging_apps>
+**Plus d’infos sur le packaging d’applications :** <https://yunohost.org/packaging_apps>

@@ -1,0 +1,69 @@
+packaging_format = 2
+
+id = "lstu"
+name = "Lstu"
+description.en = "URL Shortener"
+description.fr = "Raccourcisseur d'URL"
+
+version = "0.26.0~ynh2"
+
+maintainers = ["frju365"]
+
+[upstream]
+license = "WTFPL"
+website = "https://lstu.fr"
+demo = "https://lstu.fr"
+admindoc = "https://framagit.org/fiat-tux/hat-softwares/lstu/wikis/home"
+code = "https://framagit.org/fiat-tux/hat-softwares/lstu"
+
+[integration]
+yunohost = ">= 11.1.19"
+architectures = "all"
+multi_instance = true
+ldap = true
+sso = true
+disk = "50M"
+ram.build = "50M"
+ram.runtime = "50M"
+
+[install]
+    [install.domain]
+    type = "domain"
+
+    [install.path]
+    type = "path"
+    default = "/lstu"
+
+    [install.init_main_permission]
+    type = "group"
+    default = false
+
+    [install.theme]
+    ask.en = "Choose a theme"
+    ask.fr = "Choisissez un theme"
+    type = "string"
+    choices = ["default", "milligram"]
+    default = "milligram"
+
+    [install.password]
+    type = "password"
+
+[resources]
+        [resources.sources.main]
+        url = "https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.26-0/lstu-0.26-0.tar.gz"
+        sha256 = "323c81b4cb04a97eda7cb37b2a63d16e808591fd46eb4326f6619200ce742960"
+
+    [resources.ports]
+
+    [resources.system_user]
+
+    [resources.install_dir]
+
+    [resources.permissions]
+    main.url = "/"
+
+    [resources.apt]
+    packages = "build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql carton libpod-parser-perl"
+
+    [resources.database]
+    type = "postgresql"
