@@ -7,7 +7,7 @@ Type=forking
 User=__APP__
 Restart=always
 RestartSec=10
-WorkingDirectory=__FINALPATH__
+WorkingDirectory=__INSTALL_DIR__
 ExecStart=/usr/bin/carton exec script/application minion worker
 
 [Install]
