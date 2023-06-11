@@ -6,3 +6,9 @@ test_format = 1.0
     # -------------------------------
 
 	args.theme = "milligram"
+
+    # -------------------------------
+    # Commits to test upgrade from
+    # -------------------------------
+
+    test_upgrade_from.469fb267ebc496d2c63b10de35aaf3493ce8124f.name = "Upgrade from #52"
