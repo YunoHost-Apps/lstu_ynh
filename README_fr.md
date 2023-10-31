@@ -32,7 +32,7 @@ Raccourcisseur d'URL
 * Site officiel de l’app : <https://lstu.fr>
 * Documentation officielle de l’admin : <https://framagit.org/fiat-tux/hat-softwares/lstu/wikis/home>
 * Dépôt de code officiel de l’app : <https://framagit.org/fiat-tux/hat-softwares/lstu>
-* Documentation YunoHost pour cette app : <https://yunohost.org/app_lstu>
+* YunoHost Store: <https://apps.yunohost.org/app/lstu>
 * Signaler un bug : <https://github.com/YunoHost-Apps/lstu_ynh/issues>
 
 ## Informations pour les développeurs

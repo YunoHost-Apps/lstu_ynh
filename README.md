@@ -32,7 +32,7 @@ Lstu means Let's Shorten That URL.
 * Official app website: <https://lstu.fr>
 * Official admin documentation: <https://framagit.org/fiat-tux/hat-softwares/lstu/wikis/home>
 * Upstream app code repository: <https://framagit.org/fiat-tux/hat-softwares/lstu>
-* YunoHost documentation for this app: <https://yunohost.org/app_lstu>
+* YunoHost Store: <https://apps.yunohost.org/app/lstu>
 * Report a bug: <https://github.com/YunoHost-Apps/lstu_ynh/issues>
 
 ## Developer info
