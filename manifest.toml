@@ -41,7 +41,7 @@ ram.runtime = "50M"
     [install.theme]
     ask.en = "Choose a theme"
     ask.fr = "Choisissez un theme"
-    type = "string"
+    type = "select"
     choices = ["default", "milligram"]
     default = "milligram"
 
@@ -49,9 +49,9 @@ ram.runtime = "50M"
     type = "password"
 
 [resources]
-        [resources.sources.main]
-        url = "https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.26-0/lstu-0.26-0.tar.gz"
-        sha256 = "323c81b4cb04a97eda7cb37b2a63d16e808591fd46eb4326f6619200ce742960"
+    [resources.sources.main]
+    url = "https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.26-0/lstu-0.26-0.tar.gz"
+    sha256 = "323c81b4cb04a97eda7cb37b2a63d16e808591fd46eb4326f6619200ce742960"
 
     [resources.ports]
 
@@ -63,7 +63,17 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql carton libpod-parser-perl"
+    packages = [
+        "build-essential",
+        "libssl-dev",
+        "zlib1g-dev",
+        "libpng-dev",
+        "libpq-dev",
+        "libpod-parser-perl",
+        "carton",
+        "memcached",
+        "postgresql",
+    ]
 
     [resources.database]
     type = "postgresql"
