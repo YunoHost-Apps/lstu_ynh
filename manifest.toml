@@ -41,7 +41,7 @@ ram.runtime = "50M"
     [install.theme]
     ask.en = "Choose a theme"
     ask.fr = "Choisissez un theme"
-    type = "string"
+    type = "select"
     choices = ["default", "milligram"]
     default = "milligram"
 
@@ -64,7 +64,17 @@ ram.runtime = "50M"
     main.url = "/"
 
     [resources.apt]
-    packages = "build-essential libssl-dev zlib1g-dev libpng-dev libpq-dev memcached postgresql carton libpod-parser-perl"
+    packages = [
+        "build-essential",
+        "libssl-dev",
+        "zlib1g-dev",
+        "libpng-dev",
+        "libpq-dev",
+        "libpod-parser-perl",
+        "carton",
+        "memcached",
+        "postgresql",
+    ]
 
     [resources.database]
     type = "postgresql"
