@@ -52,6 +52,7 @@ ram.runtime = "50M"
     [resources.sources.main]
     url = "https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.26-0/lstu-0.26-0.tar.gz"
     sha256 = "323c81b4cb04a97eda7cb37b2a63d16e808591fd46eb4326f6619200ce742960"
+    autoupdate.strategy = "latest_gitlab_release"
 
     [resources.ports]
 
