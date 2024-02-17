@@ -19,7 +19,7 @@ Si vous n’avez pas YunoHost, regardez [ici](https://yunohost.org/#/install) po
 Raccourcisseur d'URL
 
 
-**Version incluse :** 0.26.0~ynh3
+**Version incluse :** 0.28-0~ynh1
 
 **Démo :** https://lstu.fr
 
