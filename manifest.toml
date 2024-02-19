@@ -5,7 +5,7 @@ name = "Lstu"
 description.en = "URL Shortener"
 description.fr = "Raccourcisseur d'URL"
 
-version = "0.26.0~ynh3"
+version = "0.28-0~ynh1"
 
 maintainers = ["frju365"]
 
@@ -50,8 +50,8 @@ ram.runtime = "50M"
 
 [resources]
     [resources.sources.main]
-    url = "https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.26-0/lstu-0.26-0.tar.gz"
-    sha256 = "323c81b4cb04a97eda7cb37b2a63d16e808591fd46eb4326f6619200ce742960"
+    url = "https://framagit.org/fiat-tux/hat-softwares/lstu/-/archive/0.28-0/lstu-0.28-0.tar.bz2"
+    sha256 = "8e7e818540ade44c7ed410b0ee25a0091b2cf56bc04bdaccdeb4e5c354635546"
     autoupdate.strategy = "latest_gitlab_release"
 
     [resources.ports]
