@@ -45,7 +45,7 @@ ynh_script_progression --message="Building $app..."
 
 pushd $install_dir
 	ynh_secure_remove --file="$install_dir/local"
-	carton install --deployment --without=sqlite --without=mysql
+	carton install --without=sqlite --without=mysql
 popd
 
 #=================================================

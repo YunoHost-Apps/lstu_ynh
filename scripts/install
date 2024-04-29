@@ -66,7 +66,7 @@ ynh_add_config --template="lstu.conf.ldap" --destination="$install_dir/lstu.conf
 ynh_script_progression --message="Installing Lstu..."
 
 pushd $install_dir
-	carton install --deployment --without=sqlite --without=mysql
+	carton install --without=sqlite --without=mysql
 popd
 
 #=================================================
