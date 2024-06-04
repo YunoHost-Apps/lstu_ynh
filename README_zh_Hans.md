@@ -19,7 +19,7 @@
 Lstu means Let's Shorten That URL.
 
 
-**分发版本：** 0.26.0~ynh3
+**分发版本：** 0.28-0~ynh1
 
 **演示：** <https://lstu.fr>
 
