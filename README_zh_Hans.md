@@ -3,7 +3,7 @@
 请勿手动编辑。
 -->
 
-# YunoHost 的 Lstu
+# YunoHost 上的 Lstu
 
 [![集成程度](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![工作状态](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)
 
