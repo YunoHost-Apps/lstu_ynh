@@ -19,7 +19,7 @@ No se debe editar a mano.
 Lstu means Let's Shorten That URL.
 
 
-**Versión actual:** 0.28-0~ynh1
+**Versión actual:** 0.28-0~ynh2
 
 **Demo:** <https://lstu.fr>
 
