@@ -19,7 +19,7 @@ Il NE doit PAS être modifié à la main.
 Raccourcisseur d'URL
 
 
-**Version incluse :** 0.28-0~ynh1
+**Version incluse :** 0.28-0~ynh2
 
 **Démo :** <https://lstu.fr>
 
