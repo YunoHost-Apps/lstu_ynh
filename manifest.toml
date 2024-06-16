@@ -36,6 +36,7 @@ ram.runtime = "50M"
 
     [install.init_main_permission]
     type = "group"
+    default = "visitors"
 
     [install.theme]
     ask.en = "Choose a theme"
