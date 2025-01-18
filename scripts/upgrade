@@ -69,7 +69,7 @@ yunohost service add $app --log="/var/log/$app.log" --log="/var/www/$app/log/pro
 #=================================================
 ynh_script_progression --message="Starting a systemd service..."
 
-ynh_systemd_action --service_name=$app --action=reload --log_path="systemd" --line_match="Reloaded Shortened URLs service."
+ynh_systemd_action --service_name=$app --action=reload --log_path="systemd" --line_match="Web application available at"
 
 #=================================================
 # END OF SCRIPT
