@@ -51,7 +51,7 @@ ynh_config_add --template="lstu.conf" --destination="$install_dir/lstu.conf"
 ynh_script_progression "Installing Lstu..."
 
 pushd $install_dir
-	carton install --without=sqlite --without=mysql
+	ynh_hide_warnings carton install --without=sqlite --without=mysql
 popd
 
 #=================================================

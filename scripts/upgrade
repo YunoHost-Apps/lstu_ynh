@@ -31,7 +31,7 @@ ynh_script_progression "Building $app..."
 
 pushd $install_dir
 	ynh_safe_rm "$install_dir/local"
-	carton install --without=sqlite --without=mysql
+	ynh_hide_warnings carton install --without=sqlite --without=mysql
 popd
 
 #=================================================
