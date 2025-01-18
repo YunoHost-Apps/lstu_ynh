@@ -1,11 +1,5 @@
 #!/bin/bash
 
-#=================================================
-# GENERIC START
-#=================================================
-# IMPORT GENERIC HELPERS
-#=================================================
-
 source _common.sh
 source /usr/share/yunohost/helpers
 
@@ -19,66 +13,56 @@ hashed_password=$(echo -n $password | sha256sum | cut -d' ' -f1)
 #=================================================
 # STORE SETTINGS FROM MANIFEST
 #=================================================
-ynh_script_progression --message="Storing installation settings..."
+ynh_script_progression "Storing installation settings..."
 
-ynh_app_setting_set --app=$app --key=secret --value=$secret
-ynh_app_setting_set --app=$app --key=hashed_password --value=$hashed_password
+ynh_app_setting_set --key=secret --value=$secret
+ynh_app_setting_set --key=hashed_password --value=$hashed_password
 
 #=================================================
 # DOWNLOAD, CHECK AND UNPACK SOURCE
 #=================================================
-ynh_script_progression --message="Setting up source files..."
+ynh_script_progression "Setting up source files..."
 
-# Download, check integrity, uncompress and patch the source from app.src
 ynh_setup_source --dest_dir="$install_dir"
-
-chmod -R o-rwx "$install_dir"
-chown -R $app:www-data "$install_dir"
 
 #=================================================
 # NGINX CONFIGURATION
 #=================================================
-ynh_script_progression --message="Configuring NGINX web server..."
+ynh_script_progression "Configuring NGINX web server..."
 
-# Create a dedicated nginx config
-ynh_add_nginx_config
+ynh_config_add_nginx
 
-# Create a dedicated systemd config
-ynh_add_systemd_config
+ynh_config_add_systemd
 
-# Use logrotate to manage application logfile(s)
-ynh_use_logrotate
+ynh_config_add_logrotate
 
 yunohost service add $app --log="/var/log/$app.log" --log="/var/www/$app/log/production.log"
 
 #=================================================
-# SPECIFIC SETUP
-#=================================================
 # ADD A CONFIGURATION
 #=================================================
-ynh_script_progression --message="Adding a configuration file..."
+ynh_script_progression "Adding $app's configuration..."
 
-ynh_add_config --template="lstu.conf.ldap" --destination="$install_dir/lstu.conf"
+ynh_config_add --template="lstu.conf" --destination="$install_dir/lstu.conf"
 
 #=================================================
 # INSTALL LSTU
 #=================================================
-ynh_script_progression --message="Installing Lstu..."
+ynh_script_progression "Installing Lstu..."
 
 pushd $install_dir
-	carton install --without=sqlite --without=mysql
+	ynh_hide_warnings carton install --without=sqlite --without=mysql
 popd
 
 #=================================================
 # START SYSTEMD SERVICE
 #=================================================
-ynh_script_progression --message="Starting a systemd service..."
+ynh_script_progression "Starting $app's systemd service..."
 
-# Start a systemd service
-ynh_systemd_action --service_name=$app --action="start" --log_path="systemd" --line_match="Web application available at"
+ynh_systemctl --service=$app --action="start" --log_path="systemd" --wait_until="Web application available at"
 
 #=================================================
 # END OF SCRIPT
 #=================================================
 
-ynh_script_progression --message="Installation of $app completed"
+ynh_script_progression "Installation of $app completed"
