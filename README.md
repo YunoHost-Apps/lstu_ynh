@@ -5,7 +5,9 @@ It shall NOT be edited by hand.
 
 # Lstu for YunoHost
 
-[![Integration level](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![Working status](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![Maintenance status](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)
+[![Integration level](https://apps.yunohost.org/badge/integration/lstu)](https://ci-apps.yunohost.org/ci/apps/lstu/)
+![Working status](https://apps.yunohost.org/badge/state/lstu)
+![Maintenance status](https://apps.yunohost.org/badge/maintained/lstu)
 
 [![Install Lstu with YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lstu)
 
