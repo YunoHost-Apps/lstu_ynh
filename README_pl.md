@@ -21,7 +21,7 @@ Nie powinno być ono edytowane ręcznie.
 Lstu means Let's Shorten That URL.
 
 
-**Dostarczona wersja:** 0.28-0~ynh2
+**Dostarczona wersja:** 0.28-0~ynh3
 
 **Demo:** <https://lstu.fr>
 

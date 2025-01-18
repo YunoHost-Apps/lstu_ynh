@@ -20,7 +20,7 @@ ynh_setup_source --dest_dir="$install_dir" --keep="lstu.conf"
 #=================================================
 # UPDATE A CONFIG FILE
 #=================================================
-#ynh_script_progression "Updating configuration..."
+ynh_script_progression "Updating configuration..."
 
 ynh_config_add --template="lstu.conf" --destination="$install_dir/lstu.conf"
 

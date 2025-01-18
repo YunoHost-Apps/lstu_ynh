@@ -21,7 +21,7 @@ EZ editatu eskuz.
 Lstu means Let's Shorten That URL.
 
 
-**Paketatutako bertsioa:** 0.28-0~ynh2
+**Paketatutako bertsioa:** 0.28-0~ynh3
 
 **Demoa:** <https://lstu.fr>
 
