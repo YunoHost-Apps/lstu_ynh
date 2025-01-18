@@ -20,8 +20,10 @@ code = "https://framagit.org/fiat-tux/hat-softwares/lstu"
 yunohost = ">= 11.1.20"
 architectures = "all"
 multi_instance = true
+
 ldap = true
 sso = true
+
 disk = "50M"
 ram.build = "50M"
 ram.runtime = "50M"
