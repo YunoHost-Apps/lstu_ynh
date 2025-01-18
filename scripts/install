@@ -43,7 +43,7 @@ yunohost service add $app --log="/var/log/$app.log" --log="/var/www/$app/log/pro
 #=================================================
 ynh_script_progression "Adding $app's configuration..."
 
-ynh_config_add --template="lstu.conf.ldap" --destination="$install_dir/lstu.conf"
+ynh_config_add --template="lstu.conf" --destination="$install_dir/lstu.conf"
 
 #=================================================
 # INSTALL LSTU

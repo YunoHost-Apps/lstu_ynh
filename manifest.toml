@@ -39,13 +39,7 @@ ram.runtime = "50M"
 
     [install.init_main_permission]
     type = "group"
-
-    [install.theme]
-    ask.en = "Choose a theme"
-    ask.fr = "Choisissez un theme"
-    type = "select"
-    choices = ["default", "milligram"]
-    default = "milligram"
+    default = "visitors"
 
     [install.password]
     type = "password"

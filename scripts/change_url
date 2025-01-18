@@ -22,7 +22,7 @@ ynh_config_change_url_nginx
 #=================================================
 ynh_script_progression "Updating configuration..."
 
-ynh_config_add --template="lstu.conf.ldap" --destination="$install_dir/lstu.conf"
+ynh_config_add --template="lstu.conf" --destination="$install_dir/lstu.conf"
 
 #=================================================
 # START SYSTEMD SERVICE
