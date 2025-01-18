@@ -5,7 +5,9 @@
 
 # YunoHost 上的 Lstu
 
-[![集成程度](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![工作状态](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![维护状态](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)
+[![集成程度](https://apps.yunohost.org/badge/integration/lstu)](https://ci-apps.yunohost.org/ci/apps/lstu/)
+![工作状态](https://apps.yunohost.org/badge/state/lstu)
+![维护状态](https://apps.yunohost.org/badge/maintained/lstu)
 
 [![使用 YunoHost 安装 Lstu](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lstu)
 
@@ -19,7 +21,7 @@
 Lstu means Let's Shorten That URL.
 
 
-**分发版本：** 0.28-0~ynh2
+**分发版本：** 0.28-0~ynh3
 
 **演示：** <https://lstu.fr>
 

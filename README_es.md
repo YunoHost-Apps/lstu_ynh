@@ -5,7 +5,9 @@ No se debe editar a mano.
 
 # Lstu para Yunohost
 
-[![Nivel de integración](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![Estado funcional](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![Estado En Mantención](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)
+[![Nivel de integración](https://apps.yunohost.org/badge/integration/lstu)](https://ci-apps.yunohost.org/ci/apps/lstu/)
+![Estado funcional](https://apps.yunohost.org/badge/state/lstu)
+![Estado En Mantención](https://apps.yunohost.org/badge/maintained/lstu)
 
 [![Instalar Lstu con Yunhost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lstu)
 
@@ -19,7 +21,7 @@ No se debe editar a mano.
 Lstu means Let's Shorten That URL.
 
 
-**Versión actual:** 0.28-0~ynh2
+**Versión actual:** 0.28-0~ynh3
 
 **Demo:** <https://lstu.fr>
 
@@ -37,7 +39,7 @@ Lstu means Let's Shorten That URL.
 
 ## Información para desarrolladores
 
-Por favor enviar sus correcciones a la [`branch testing`](https://github.com/YunoHost-Apps/lstu_ynh/tree/testing
+Por favor enviar sus correcciones a la [rama `testing`](https://github.com/YunoHost-Apps/lstu_ynh/tree/testing).
 
 Para probar la rama `testing`, sigue asÍ:
 

@@ -38,7 +38,7 @@
 
     # choose a theme. See the available themes in `themes` directory
     # optional, default is 'default'
-    theme         => '__THEME__', # default or milligram
+    theme         => 'milligram', # default or milligram
 
     # number of URLs to be displayed per page in /stats
     # optional, default is 10

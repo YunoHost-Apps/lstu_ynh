@@ -5,7 +5,9 @@ Il NE doit PAS être modifié à la main.
 
 # Lstu pour YunoHost
 
-[![Niveau d’intégration](https://dash.yunohost.org/integration/lstu.svg)](https://dash.yunohost.org/appci/app/lstu) ![Statut du fonctionnement](https://ci-apps.yunohost.org/ci/badges/lstu.status.svg) ![Statut de maintenance](https://ci-apps.yunohost.org/ci/badges/lstu.maintain.svg)
+[![Niveau d’intégration](https://apps.yunohost.org/badge/integration/lstu)](https://ci-apps.yunohost.org/ci/apps/lstu/)
+![Statut du fonctionnement](https://apps.yunohost.org/badge/state/lstu)
+![Statut de maintenance](https://apps.yunohost.org/badge/maintained/lstu)
 
 [![Installer Lstu avec YunoHost](https://install-app.yunohost.org/install-with-yunohost.svg)](https://install-app.yunohost.org/?app=lstu)
 
@@ -19,7 +21,7 @@ Il NE doit PAS être modifié à la main.
 Raccourcisseur d'URL
 
 
-**Version incluse :** 0.28-0~ynh2
+**Version incluse :** 0.28-0~ynh3
 
 **Démo :** <https://lstu.fr>
 
