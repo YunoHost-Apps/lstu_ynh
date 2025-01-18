@@ -21,7 +21,7 @@
 Lstu means Let's Shorten That URL.
 
 
-**分发版本：** 0.28-0~ynh2
+**分发版本：** 0.28-0~ynh3
 
 **演示：** <https://lstu.fr>
 
