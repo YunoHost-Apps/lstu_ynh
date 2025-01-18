@@ -22,7 +22,7 @@ ynh_setup_source --dest_dir="$install_dir" --keep="lstu.conf"
 #=================================================
 #ynh_script_progression "Updating configuration..."
 
-#ynh_config_add --template="lstu.conf" --destination="$install_dir/lstu.conf"
+ynh_config_add --template="lstu.conf" --destination="$install_dir/lstu.conf"
 
 #=================================================
 # BUILD LSU
