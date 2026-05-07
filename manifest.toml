@@ -5,7 +5,7 @@ name = "Lstu"
 description.en = "URL Shortener"
 description.fr = "Raccourcisseur d'URL"
 
-version = "0.28-0~ynh4"
+version = "0.28-0~ynh5"
 
 maintainers = ["frju365"]
 
