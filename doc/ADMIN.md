@@ -1,1 +1,1 @@
-How to configure this app: a plain file at `__INSTALL_DIR__/lstu.conf` with SSH.
+Advanced configuration for this app can be made via SSH in the file `__INSTALL_DIR__/lstu.conf`.
