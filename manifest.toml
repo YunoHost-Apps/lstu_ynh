@@ -22,7 +22,7 @@ helpers_version = "2.1"
 architectures = "all"
 multi_instance = true
 
-ldap = true
+ldap = false
 sso = false
 
 disk = "300M"
@@ -39,7 +39,7 @@ ram.runtime = "150M"
 
     [install.init_main_permission]
     type = "group"
-    default = "visitors"
+    default = "all_users"
 
     [install.password]
     type = "password"
