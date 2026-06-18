@@ -70,6 +70,7 @@ ram.runtime = "50M"
         "carton",
         "memcached",
         "postgresql",
+        "libimage-png-libpng-perl",
     ]
 
     [resources.database]
